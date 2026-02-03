@@ -4,7 +4,6 @@
   //  WhatsApp: 5521986563334
   // =============================
 
-  // Evita rodar duas vezes (NextGo/Smallpage às vezes injeta duplicado)
   if (window.__TNP_CHAT_LOADED__) return;
   window.__TNP_CHAT_LOADED__ = true;
 
@@ -17,7 +16,6 @@
   var ICON_URL = "https://melins-44.github.io/tnp-chat/chat-icon.png";
   var TIP_TEXT = "Tire suas dúvidas aqui";
 
-  // Ordem: 1 catálogo | 2 presente | 3 frete | 4 pagamento
   var QUICK = [
     { n: "1", label: "🛍️ 1 - Ver catálogo", text: "Quero ver o catálogo." },
     { n: "2", label: "🎁 2 - Comprar presente", text: "Quero comprar para presentear." },
@@ -30,17 +28,24 @@
   function css(node, rules) { node.style.cssText = rules; return node; }
   function setText(node, t) { node.textContent = t; return node; }
   function safeAppend(parent, child) { if (parent && child) parent.appendChild(child); }
+  function safeHeadAppend(styleEl) { try { document.head.appendChild(styleEl); } catch (_) {} }
 
-  function safeHeadAppend(styleEl) {
-    try { document.head.appendChild(styleEl); } catch (_) {}
+  // viewport height confiável no mobile (principalmente iOS/Android com barra)
+  function getVH() {
+    if (window.visualViewport && window.visualViewport.height) return Math.round(window.visualViewport.height);
+    return Math.round(window.innerHeight || document.documentElement.clientHeight || 700);
+  }
+  function getVW() {
+    if (window.visualViewport && window.visualViewport.width) return Math.round(window.visualViewport.width);
+    return Math.round(window.innerWidth || document.documentElement.clientWidth || 400);
   }
 
-  // ===== MAIN START (espera body existir) =====
+  // ===== MAIN START =====
   function start() {
     try {
       if (document.getElementById("tnp_chat_btn")) return;
 
-      // ---- CSS (pulse) ----
+      // ---- CSS (pulse + landscape tweaks) ----
       var style = el("style");
       style.textContent = `
         @keyframes tnpPulse {
@@ -50,6 +55,13 @@
         }
         .tnp-pulse { animation: tnpPulse 2.4s ease-in-out infinite; }
         .tnp-pulse:hover { animation-play-state: paused; }
+
+        /* Quando a tela é baixa (paisagem), compacta um pouco opt/footer pra caber melhor */
+        .tnp-compact #tnp_chat_opt { padding: 8px 10px !important; gap: 6px !important; }
+        .tnp-compact #tnp_chat_footer { padding: 8px 10px !important; gap: 6px !important; }
+        .tnp-compact #tnp_chat_footer input { padding: 8px !important; font-size: 12px !important; }
+        .tnp-compact #tnp_chat_footer button { padding: 8px 10px !important; font-size: 12px !important; }
+        .tnp-compact #tnp_chat_opt button { padding: 6px 9px !important; font-size: 11px !important; }
       `;
       safeHeadAppend(style);
 
@@ -75,7 +87,6 @@
       );
       safeAppend(wrap, tip);
 
-      // Botão (somente ícone, fundo transparente)
       var btn = el("button");
       btn.type = "button";
       btn.id = "tnp_chat_btn";
@@ -94,23 +105,26 @@
 
       safeAppend(wrap, btn);
 
-      // -------- Box --------
+      // -------- Box (agora é flex container) --------
       var box = el("div");
       box.id = "tnp_chat_box";
       css(box,
-        "position:fixed;right:18px;bottom:86px;z-index:999999;" +
+        "position:fixed;right:18px;z-index:999999;" +
         "width:340px;max-width:calc(100vw - 36px);" +
         "border-radius:18px;overflow:hidden;" +
         "box-shadow:0 14px 40px rgba(0,0,0,.25);" +
-        "background:#fff;font-family:Arial,sans-serif;display:none;"
+        "background:#fff;font-family:Arial,sans-serif;" +
+        "display:none;flex-direction:column;"
       );
       safeAppend(document.body, box);
 
       // -------- Header --------
       var header = el("div");
+      header.id = "tnp_chat_header";
       css(header,
         "padding:12px 14px;background:#111827;color:#fff;" +
-        "display:flex;align-items:center;justify-content:space-between;"
+        "display:flex;align-items:center;justify-content:space-between;" +
+        "flex:0 0 auto;"
       );
       safeAppend(box, header);
 
@@ -133,28 +147,33 @@
       css(close, "background:transparent;border:none;color:#fff;font-size:18px;cursor:pointer;");
       safeAppend(header, close);
 
-      // -------- Body --------
+      // -------- Body (flex:1) --------
       var body = el("div");
       body.id = "tnp_chat_body";
       css(body,
         "padding:12px;background:#F3F4F6;" +
-        "overflow:auto;font-size:13px;"
+        "overflow:auto;font-size:13px;" +
+        "flex:1 1 auto;min-height:0;"
       );
       safeAppend(box, body);
 
-      // -------- Options (quick + whatsapp) --------
+      // -------- Options --------
       var opt = el("div");
+      opt.id = "tnp_chat_opt";
       css(opt,
         "padding:10px 12px;background:#fff;border-top:1px solid #E5E7EB;" +
-        "display:flex;gap:8px;flex-wrap:wrap;"
+        "display:flex;gap:8px;flex-wrap:wrap;" +
+        "flex:0 0 auto;"
       );
       safeAppend(box, opt);
 
       // -------- Footer --------
       var footer = el("div");
+      footer.id = "tnp_chat_footer";
       css(footer,
         "padding:10px 12px;background:#fff;border-top:1px solid #E5E7EB;" +
-        "display:flex;gap:8px;align-items:center;"
+        "display:flex;gap:8px;align-items:center;" +
+        "flex:0 0 auto;"
       );
       safeAppend(box, footer);
 
@@ -176,7 +195,6 @@
       );
       safeAppend(footer, send);
 
-      // Botão WhatsApp (fica depois dos quick buttons)
       var go = el("button");
       go.type = "button";
       setText(go, "✅ WhatsApp");
@@ -186,46 +204,47 @@
       );
       safeAppend(opt, go);
 
-      // ===== Layout responsivo (corrige paisagem mobile: não corta em cima nem embaixo) =====
+      // ===== Layout responsivo (SEM CORTAR EMBAIXO NO HORIZONTAL) =====
       function layoutChat() {
-        var vh = window.innerHeight || document.documentElement.clientHeight || 700;
+        var vh = getVH();
+        var vw = getVW();
 
-        var safeTop = 12;
-        var safeBottom = 12;
+        // modo compact quando a altura é baixa (paisagem típica)
+        if (vh < 420 || vw > vh) box.classList.add("tnp-compact");
+        else box.classList.remove("tnp-compact");
 
+        // mede altura do wrap (label + botão)
         var wrapH = (wrap && wrap.offsetHeight) ? wrap.offsetHeight : 80;
-        var bottomGap = 12;
 
-        // wrap está em bottom:18px, então o chat deve ficar acima disso
+        var safeTop = 10;
+        var safeBottom = 10;
+        var bottomGap = 10;
+
+        // chat fica acima do wrap, sempre
         var bottomOffset = 18 + wrapH + bottomGap;
 
-        // Ajusta bottom do chat dinamicamente (para não cortar embaixo)
+        // define top e bottom; a altura vira "o que sobrar"
+        box.style.top = safeTop + "px";
         box.style.bottom = bottomOffset + "px";
 
-        // Alturas internas
-        var headerH = header.offsetHeight || 56;
-        var footerH = footer.offsetHeight || 56;
-        var optH = opt.offsetHeight || 48;
-
-        // Altura máxima do box considerando o bottomOffset
-        var maxBoxH = vh - safeTop - bottomOffset - safeBottom;
-
-        // Se a tela for muito baixa, garante que ainda caiba algo útil
-        if (maxBoxH < 240) maxBoxH = 240;
-
-        box.style.maxHeight = maxBoxH + "px";
-        box.style.overflow = "hidden";
-
-        var bodyShowH = maxBoxH - headerH - footerH - optH;
-        if (bodyShowH < 110) bodyShowH = 110;
-
-        body.style.height = bodyShowH + "px";
+        // por segurança, se por algum motivo não sobrar espaço, reduz bottomOffset um pouco
+        // (em alguns celulares, a barra do navegador come parte do viewport)
+        var available = vh - safeTop - bottomOffset - safeBottom;
+        if (available < 220) {
+          // tenta ganhar espaço diminuindo gap
+          bottomOffset = 18 + wrapH + 4;
+          box.style.bottom = bottomOffset + "px";
+        }
       }
 
       window.addEventListener("resize", layoutChat);
       window.addEventListener("orientationchange", function () {
-        setTimeout(layoutChat, 250);
+        setTimeout(layoutChat, 280);
       });
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener("resize", layoutChat);
+        window.visualViewport.addEventListener("scroll", layoutChat);
+      }
 
       // ===== Chat logic =====
       var log = [];
@@ -241,7 +260,7 @@
         css(b,
           "max-width:82%;padding:10px 12px;border-radius:14px;" +
           "box-shadow:0 6px 16px rgba(0,0,0,.08);" +
-          "white-space:pre-line;" + // <<< IMPORTANTE: respeita \n no texto
+          "white-space:pre-line;" +
           (who === "user"
             ? "background:#2563EB;color:#fff;border-top-right-radius:6px;"
             : "background:#fff;color:#111827;border-top-left-radius:6px;")
@@ -295,7 +314,6 @@
         };
         opt.insertBefore(b, go);
       }
-
       for (var i = 0; i < QUICK.length; i++) mkQuick(QUICK[i]);
 
       function normalizeUserText(raw) {
@@ -315,13 +333,12 @@
 
       // ===== Events =====
       function openChat() {
-        box.style.display = "block";
+        box.style.display = "flex";
         btn.classList.remove("tnp-pulse");
         body.innerHTML = "";
         log = [];
-        bot(WELCOME);
 
-        // MENU COM QUEBRA DE LINHA (o que você pediu)
+        bot(WELCOME);
         bot(
           "Se preferir, digite:\n" +
           "1 - Ver catálogo\n" +
@@ -339,7 +356,7 @@
       }
 
       btn.onclick = function () {
-        var visible = box.style.display === "block";
+        var visible = box.style.display === "flex";
         if (visible) closeChat();
         else openChat();
       };
@@ -375,3 +392,4 @@
 
   waitForBody();
 })();
+
