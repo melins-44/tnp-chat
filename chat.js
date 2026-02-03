@@ -15,7 +15,7 @@
   var WELCOME_1 = "Olá, seja bem-vindo(a) a Tô na Praia";
   var WELCOME_2 = "Sobre o que você quer falar?";
 
-  var ICON_URL = "https://melins-44.github.io/tnp-chat/chat-icon.png";
+  var ICON_URL = "https://melins-44.github.io/tnp-chat/icorobo.png";
   var TIP_TEXT = "Tire suas dúvidas aqui";
 
   // ===== CORES (Tô na Praia - verde clarinho) =====
