@@ -1,6 +1,6 @@
 (function () {
   // =============================
-  //  Tô na Praia - Chat Widget
+  //  Tô na Praia - Chat Widget (SendPulse-like)
   //  WhatsApp: 5521986563334
   // =============================
 
@@ -11,16 +11,17 @@
   var WHATSAPP_NUMBER = "5521986563334";
   var BRAND_NAME = "Tô na Praia";
   var SUBTITLE = "Atendimento rápido";
-  var WELCOME = "Oi! 😊 Posso te ajudar ?";
+  var WELCOME_1 = "Olá, seja bem-vindo(a) a Tô na Praia";
+  var WELCOME_2 = "Sobre o que você quer falar?";
 
   var ICON_URL = "https://melins-44.github.io/tnp-chat/chat-icon.png";
   var TIP_TEXT = "Tire suas dúvidas aqui";
 
+  // Botões estilo SendPulse (dentro da conversa)
   var QUICK = [
-    { n: "1", label: "🛍️ 1 - Ver catálogo", text: "Quero ver o catálogo." },
-    { n: "2", label: "🎁 2 - Comprar presente", text: "Quero comprar para presentear." },
-    { n: "3", label: "🚚 3 - Frete / Entrega", text: "Queria saber sobre frete e entrega." },
-    { n: "4", label: "💳 4 - Pagamento", text: "Quais formas de pagamento vocês aceitam?" }
+    { n: "1", label: "1 - Como eu compro?", text: "Como eu compro?" },
+    { n: "2", label: "2 - Política Troca", text: "Quero saber sobre política de troca." },
+    { n: "3", label: "3 - Conversar", text: "Quero falar com alguém no WhatsApp.", action: "whatsapp" }
   ];
 
   // ===== HELPERS =====
@@ -30,7 +31,6 @@
   function safeAppend(parent, child) { if (parent && child) parent.appendChild(child); }
   function safeHeadAppend(styleEl) { try { document.head.appendChild(styleEl); } catch (_) {} }
 
-  // viewport height confiável no mobile (principalmente iOS/Android com barra)
   function getVH() {
     if (window.visualViewport && window.visualViewport.height) return Math.round(window.visualViewport.height);
     return Math.round(window.innerHeight || document.documentElement.clientHeight || 700);
@@ -40,32 +40,28 @@
     return Math.round(window.innerWidth || document.documentElement.clientWidth || 400);
   }
 
-  // ===== MAIN START =====
   function start() {
     try {
       if (document.getElementById("tnp_chat_btn")) return;
 
-      // ---- CSS (pulse + landscape tweaks) ----
+      // ---- CSS ----
       var style = el("style");
       style.textContent = `
         @keyframes tnpPulse {
-          0%   { transform: scale(1); }
-          50%  { transform: scale(1.06); }
+          0% { transform: scale(1); }
+          50% { transform: scale(1.06); }
           100% { transform: scale(1); }
         }
         .tnp-pulse { animation: tnpPulse 2.4s ease-in-out infinite; }
         .tnp-pulse:hover { animation-play-state: paused; }
 
-        /* Quando a tela é baixa (paisagem), compacta um pouco opt/footer pra caber melhor */
-        .tnp-compact #tnp_chat_opt { padding: 8px 10px !important; gap: 6px !important; }
-        .tnp-compact #tnp_chat_footer { padding: 8px 10px !important; gap: 6px !important; }
+        .tnp-compact #tnp_chat_footer { padding: 8px 10px !important; }
         .tnp-compact #tnp_chat_footer input { padding: 8px !important; font-size: 12px !important; }
         .tnp-compact #tnp_chat_footer button { padding: 8px 10px !important; font-size: 12px !important; }
-        .tnp-compact #tnp_chat_opt button { padding: 6px 9px !important; font-size: 11px !important; }
       `;
       safeHeadAppend(style);
 
-      // -------- Floating CTA (label + button) --------
+      // -------- Floating CTA --------
       var wrap = el("div");
       wrap.id = "tnp_chat_wrap";
       css(wrap,
@@ -97,7 +93,6 @@
         "cursor:pointer;display:flex;align-items:center;justify-content:center;" +
         "padding:0;"
       );
-
       btn.innerHTML =
         '<img src="' + ICON_URL + '" alt="Chat" ' +
         'style="width:40px;height:40px;object-fit:contain;display:block;' +
@@ -105,7 +100,7 @@
 
       safeAppend(wrap, btn);
 
-      // -------- Box (agora é flex container) --------
+      // -------- Box (flex) --------
       var box = el("div");
       box.id = "tnp_chat_box";
       css(box,
@@ -120,7 +115,6 @@
 
       // -------- Header --------
       var header = el("div");
-      header.id = "tnp_chat_header";
       css(header,
         "padding:12px 14px;background:#111827;color:#fff;" +
         "display:flex;align-items:center;justify-content:space-between;" +
@@ -147,7 +141,7 @@
       css(close, "background:transparent;border:none;color:#fff;font-size:18px;cursor:pointer;");
       safeAppend(header, close);
 
-      // -------- Body (flex:1) --------
+      // -------- Body --------
       var body = el("div");
       body.id = "tnp_chat_body";
       css(body,
@@ -157,17 +151,7 @@
       );
       safeAppend(box, body);
 
-      // -------- Options --------
-      var opt = el("div");
-      opt.id = "tnp_chat_opt";
-      css(opt,
-        "padding:10px 12px;background:#fff;border-top:1px solid #E5E7EB;" +
-        "display:flex;gap:8px;flex-wrap:wrap;" +
-        "flex:0 0 auto;"
-      );
-      safeAppend(box, opt);
-
-      // -------- Footer --------
+      // -------- Footer (input fixo) --------
       var footer = el("div");
       footer.id = "tnp_chat_footer";
       css(footer,
@@ -179,7 +163,7 @@
 
       var input = el("input");
       input.type = "text";
-      input.placeholder = "Escreva aqui… (ou digite 1, 2, 3, 4)";
+      input.placeholder = "Enviar uma mensagem…";
       css(input,
         "flex:1;border:1px solid #E5E7EB;border-radius:12px;" +
         "padding:10px;font-size:13px;outline:none;"
@@ -195,58 +179,29 @@
       );
       safeAppend(footer, send);
 
-      var go = el("button");
-      go.type = "button";
-      setText(go, "✅ WhatsApp");
-      css(go,
-        "border:none;border-radius:999px;padding:8px 10px;" +
-        "background:#111827;color:#fff;font-size:12px;cursor:pointer;"
-      );
-      safeAppend(opt, go);
-
-      // ===== Layout responsivo (SEM CORTAR EMBAIXO NO HORIZONTAL) =====
+      // ===== Layout =====
       function layoutChat() {
         var vh = getVH();
         var vw = getVW();
 
-        // modo compact quando a altura é baixa (paisagem típica)
         if (vh < 420 || vw > vh) box.classList.add("tnp-compact");
         else box.classList.remove("tnp-compact");
 
-        // mede altura do wrap (label + botão)
         var wrapH = (wrap && wrap.offsetHeight) ? wrap.offsetHeight : 80;
+        var bottomOffset = 18 + wrapH + 10;
 
-        var safeTop = 10;
-        var safeBottom = 10;
-        var bottomGap = 10;
-
-        // chat fica acima do wrap, sempre
-        var bottomOffset = 18 + wrapH + bottomGap;
-
-        // define top e bottom; a altura vira "o que sobrar"
-        box.style.top = safeTop + "px";
+        box.style.top = "10px";
         box.style.bottom = bottomOffset + "px";
-
-        // por segurança, se por algum motivo não sobrar espaço, reduz bottomOffset um pouco
-        // (em alguns celulares, a barra do navegador come parte do viewport)
-        var available = vh - safeTop - bottomOffset - safeBottom;
-        if (available < 220) {
-          // tenta ganhar espaço diminuindo gap
-          bottomOffset = 18 + wrapH + 4;
-          box.style.bottom = bottomOffset + "px";
-        }
       }
 
       window.addEventListener("resize", layoutChat);
-      window.addEventListener("orientationchange", function () {
-        setTimeout(layoutChat, 280);
-      });
+      window.addEventListener("orientationchange", function () { setTimeout(layoutChat, 280); });
       if (window.visualViewport) {
         window.visualViewport.addEventListener("resize", layoutChat);
         window.visualViewport.addEventListener("scroll", layoutChat);
       }
 
-      // ===== Chat logic =====
+      // ===== Chat UI helpers =====
       var log = [];
 
       function addBubble(msg, who) {
@@ -258,7 +213,7 @@
 
         var b = el("div");
         css(b,
-          "max-width:82%;padding:10px 12px;border-radius:14px;" +
+          "max-width:86%;padding:10px 12px;border-radius:14px;" +
           "box-shadow:0 6px 16px rgba(0,0,0,.08);" +
           "white-space:pre-line;" +
           (who === "user"
@@ -272,6 +227,44 @@
         body.scrollTop = body.scrollHeight;
       }
 
+      function addQuickButtons(items) {
+        // bloco com botões estilo SendPulse dentro do chat
+        var block = el("div");
+        css(block, "margin:8px 0;display:flex;flex-direction:column;gap:8px;align-items:stretch;");
+
+        for (var i = 0; i < items.length; i++) {
+          (function (it) {
+            var qb = el("button");
+            qb.type = "button";
+            setText(qb, it.label);
+            css(qb,
+              "width:100%;text-align:center;" +
+              "border:none;background:#E5E7EB;color:#111827;" +
+              "border-radius:12px;padding:10px 12px;" +
+              "font-weight:700;font-size:13px;cursor:pointer;" +
+              "box-shadow:0 4px 12px rgba(0,0,0,.06);"
+            );
+            qb.onclick = function () {
+              // remove o bloco pra não ficar repetindo (igual SendPulse)
+              try { block.remove(); } catch (_) {}
+
+              if (it.action === "whatsapp") {
+                addBubble("Quero conversar no WhatsApp.", "user");
+                openWpp("Quero conversar no WhatsApp.");
+                return;
+              }
+
+              addBubble(it.text, "user");
+              botReply(it.text);
+            };
+            safeAppend(block, qb);
+          })(items[i]);
+        }
+
+        safeAppend(body, block);
+        body.scrollTop = body.scrollHeight;
+      }
+
       function bot(m) { addBubble(m, "bot"); log.push("Bot: " + m); }
       function user(m) { addBubble(m, "user"); log.push("Cliente: " + m); }
 
@@ -279,42 +272,38 @@
         var t = (userText || "").toLowerCase();
 
         setTimeout(function () {
-          if (t.indexOf("cat") >= 0 || t.indexOf("catá") >= 0 || t.indexOf("catalog") >= 0) {
+          if (t.indexOf("compr") >= 0) {
+            bot("Perfeito 😊\nVocê quer comprar para você ou para presente?");
+            addQuickButtons([
+              { label: "Para mim", text: "Quero comprar para mim." },
+              { label: "Para presente", text: "Quero comprar para presentear." }
+            ]);
+          } else if (t.indexOf("troca") >= 0) {
+            bot("A troca é avaliada caso a caso.\nMe diz o que aconteceu e em quanto tempo foi a compra?");
+          } else if (t.indexOf("cat") >= 0) {
             bot("Você procura mais:\n• brinco\n• colar\n• pulseira\n• choker");
-          } else if (t.indexOf("frete") >= 0 || t.indexOf("entrega") >= 0 || t.indexOf("bairro") >= 0) {
+          } else if (t.indexOf("frete") >= 0 || t.indexOf("entrega") >= 0) {
             bot("Me diz seu bairro/cidade que eu confirmo a entrega 😊");
-          } else if (t.indexOf("pag") >= 0 || t.indexOf("pix") >= 0 || t.indexOf("cart") >= 0) {
+          } else if (t.indexOf("pix") >= 0 || t.indexOf("cart") >= 0 || t.indexOf("pag") >= 0) {
             bot("Aceitamos Pix e cartão.\nVocê prefere Pix ou cartão?");
           } else if (t.indexOf("presente") >= 0) {
             bot("Boa! 😄\nPra quem é o presente e qual faixa de valor você quer gastar?");
           } else {
-            bot("Entendi!\nSe quiser, eu já te levo pro WhatsApp com essa mensagem pronta ✅");
+            bot("Entendi!\nSe quiser, eu te levo pro WhatsApp com essa mensagem pronta ✅");
+            addQuickButtons([{ label: "Conversar no WhatsApp ↗", text: "Quero falar no WhatsApp.", action: "whatsapp" }]);
           }
         }, 280);
       }
 
-      function openWpp() {
+      function openWpp(extra) {
         var last = log.slice(-14).join("\n");
-        var msg = "Oi! Vim do microsite.\n\n" + last + "\n\nQuero continuar por aqui no WhatsApp 🙂";
-        var url = "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(msg);
+        var base = "Oi! Vim do microsite.\n\n" + last;
+        if (extra) base += "\nCliente: " + extra;
+        base += "\n\nQuero continuar por aqui no WhatsApp 🙂";
+
+        var url = "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(base);
         window.open(url, "_blank");
       }
-
-      function mkQuick(item) {
-        var b = el("button");
-        b.type = "button";
-        setText(b, item.label);
-        css(b,
-          "border:1px solid #E5E7EB;background:#fff;border-radius:999px;" +
-          "padding:7px 10px;font-size:12px;cursor:pointer;"
-        );
-        b.onclick = function () {
-          user(item.text);
-          botReply(item.text);
-        };
-        opt.insertBefore(b, go);
-      }
-      for (var i = 0; i < QUICK.length; i++) mkQuick(QUICK[i]);
 
       function normalizeUserText(raw) {
         var t = (raw || "").trim();
@@ -323,6 +312,8 @@
         if (t === "1") return QUICK[0].text;
         if (t === "2") return QUICK[1].text;
         if (t === "3") return QUICK[2].text;
+
+        // o 3 também é “conversar”
         if (t === "4") return QUICK[3].text;
 
         var m = t.match(/^\s*([1-4])\b/);
@@ -338,14 +329,11 @@
         body.innerHTML = "";
         log = [];
 
-        bot(WELCOME);
-        bot(
-          "Se preferir, digite:\n" +
-          "1 - Ver catálogo\n" +
-          "2 - Comprar presente\n" +
-          "3 - Frete / Entrega\n" +
-          "4 - Pagamento"
-        );
+        bot(WELCOME_1);
+        bot(WELCOME_2);
+
+        // Botões estilo SendPulse “flutuando” na conversa
+        addQuickButtons(QUICK);
 
         layoutChat();
       }
@@ -371,14 +359,18 @@
         user(raw);
 
         var normalized = normalizeUserText(raw);
+        // se o cara digitar "3" e a opção 3 for WhatsApp
+        if (raw.trim() === "3") {
+          openWpp("Quero conversar no WhatsApp.");
+          return;
+        }
+
         botReply(normalized);
       };
 
       input.addEventListener("keydown", function (e) {
         if (e.key === "Enter") send.click();
       });
-
-      go.onclick = openWpp;
 
     } catch (e) {
       try { console.error("TNP chat error:", e); } catch (_) {}
@@ -392,4 +384,5 @@
 
   waitForBody();
 })();
+
 
