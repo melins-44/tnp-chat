@@ -69,12 +69,12 @@ btn.type = "button";
 btn.id = "tnp_chat_btn";
 btn.setAttribute("aria-label", "Abrir chat");
 css(btn,
-  "width:56px;height:56px;border-radius:16px;border:none;" +
-  "background:#2563EB;color:#fff;cursor:pointer;" +
-  "display:flex;align-items:center;justify-content:center;" +
-  "box-shadow:0 14px 40px rgba(37,99,235,.35);" +
-  "transition:transform .12s ease, box-shadow .12s ease;"
+  "width:56px;height:56px;border:none;background:transparent;" +
+  "cursor:pointer;display:flex;align-items:center;justify-content:center;" +
+  "padding:0;"
 );
+
+
 
 // Ícone em SVG (balão)
 btn.innerHTML =
