@@ -78,11 +78,10 @@ css(btn,
 
 // Ícone em SVG (balão)
 btn.innerHTML =
-  '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">' +
-  '<path d="M7 10.5h10M7 14h7" stroke="white" stroke-width="2" stroke-linecap="round"/>' +
-  '<path d="M12 3c-5 0-9 3.5-9 7.8C3 14.2 6.1 17 10.1 17H11l3.8 3.1c.6.5 1.5 0 1.5-.8V17h.6c4 0 7.1-2.8 7.1-6.2C24 6.5 17 3 12 3Z" fill="white" fill-opacity=".18"/>' +
-  '<path d="M12 3c-5 0-9 3.5-9 7.8C3 14.2 6.1 17 10.1 17H11l3.8 3.1c.6.5 1.5 0 1.5-.8V17h.6c4 0 7.1-2.8 7.1-6.2C24 6.5 17 3 12 3Z" stroke="white" stroke-width="2" stroke-linejoin="round"/>' +
-  '</svg>';
+  '<img src="https://melins-44.github.io/tnp-chat/chat-icon.png" ' +
+  'alt="Chat" ' +
+  'style="width:30px;height:30px;object-fit:contain;display:block;" />';
+
 
 btn.onmouseenter = function () {
   btn.style.transform = "translateY(-1px)";
