@@ -38,18 +38,63 @@
       // Não cria novamente se já existir botão na página
       if (document.getElementById("tnp_chat_btn")) return;
 
-      // -------- Button --------
-      var btn = el("button");
-      btn.type = "button";
-      btn.id = "tnp_chat_btn";
-      setText(btn, "💬");
-      css(btn,
-        "position:fixed;right:18px;bottom:18px;z-index:999999;" +
-        "width:56px;height:56px;border-radius:999px;border:none;" +
-        "background:#25D366;color:#fff;font-size:26px;cursor:pointer;" +
-        "box-shadow:0 10px 30px rgba(0,0,0,.20);"
-      );
-      safeAppend(document.body, btn);
+     // -------- Floating CTA (label + button) --------
+
+// Wrapper pra juntar label + botão e flutuar como um conjunto
+var wrap = el("div");
+wrap.id = "tnp_chat_wrap";
+css(wrap,
+  "position:fixed;right:18px;bottom:18px;z-index:999999;" +
+  "display:flex;flex-direction:column;align-items:flex-end;gap:8px;"
+);
+safeAppend(document.body, wrap);
+
+// Label acima do botão
+var tip = el("div");
+tip.id = "tnp_chat_tip";
+setText(tip, "Tire suas dúvidas aqui");
+css(tip,
+  "background:rgba(17,24,39,.92);color:#fff;" +
+  "padding:6px 10px;border-radius:12px;" +
+  "font:12px Arial;letter-spacing:.2px;" +
+  "box-shadow:0 10px 30px rgba(0,0,0,.18);" +
+  "backdrop-filter:saturate(140%) blur(6px);" +
+  "user-select:none;"
+);
+safeAppend(wrap, tip);
+
+// Botão azul com ícone SVG (mais bonito que emoji)
+var btn = el("button");
+btn.type = "button";
+btn.id = "tnp_chat_btn";
+btn.setAttribute("aria-label", "Abrir chat");
+css(btn,
+  "width:56px;height:56px;border-radius:16px;border:none;" +
+  "background:#2563EB;color:#fff;cursor:pointer;" +
+  "display:flex;align-items:center;justify-content:center;" +
+  "box-shadow:0 14px 40px rgba(37,99,235,.35);" +
+  "transition:transform .12s ease, box-shadow .12s ease;"
+);
+
+// Ícone em SVG (balão)
+btn.innerHTML =
+  '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">' +
+  '<path d="M7 10.5h10M7 14h7" stroke="white" stroke-width="2" stroke-linecap="round"/>' +
+  '<path d="M12 3c-5 0-9 3.5-9 7.8C3 14.2 6.1 17 10.1 17H11l3.8 3.1c.6.5 1.5 0 1.5-.8V17h.6c4 0 7.1-2.8 7.1-6.2C24 6.5 17 3 12 3Z" fill="white" fill-opacity=".18"/>' +
+  '<path d="M12 3c-5 0-9 3.5-9 7.8C3 14.2 6.1 17 10.1 17H11l3.8 3.1c.6.5 1.5 0 1.5-.8V17h.6c4 0 7.1-2.8 7.1-6.2C24 6.5 17 3 12 3Z" stroke="white" stroke-width="2" stroke-linejoin="round"/>' +
+  '</svg>';
+
+btn.onmouseenter = function () {
+  btn.style.transform = "translateY(-1px)";
+  btn.style.boxShadow = "0 18px 50px rgba(37,99,235,.42)";
+};
+btn.onmouseleave = function () {
+  btn.style.transform = "translateY(0)";
+  btn.style.boxShadow = "0 14px 40px rgba(37,99,235,.35)";
+};
+
+safeAppend(wrap, btn);
+
 
       // -------- Box --------
       var box = el("div");
