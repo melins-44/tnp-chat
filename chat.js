@@ -32,7 +32,6 @@
   function safeAppend(parent, child) { if (parent && child) parent.appendChild(child); }
 
   function safeHeadAppend(styleEl) {
-    // Em alguns construtores, head existe mas o append pode atrasar; aqui é simples
     try { document.head.appendChild(styleEl); } catch (_) {}
   }
 
@@ -242,6 +241,7 @@
         css(b,
           "max-width:82%;padding:10px 12px;border-radius:14px;" +
           "box-shadow:0 6px 16px rgba(0,0,0,.08);" +
+          "white-space:pre-line;" + // <<< IMPORTANTE: respeita \n no texto
           (who === "user"
             ? "background:#2563EB;color:#fff;border-top-right-radius:6px;"
             : "background:#fff;color:#111827;border-top-left-radius:6px;")
@@ -261,15 +261,15 @@
 
         setTimeout(function () {
           if (t.indexOf("cat") >= 0 || t.indexOf("catá") >= 0 || t.indexOf("catalog") >= 0) {
-            bot("Você procura mais: brinco, colar, pulseira ou choker?");
+            bot("Você procura mais:\n• brinco\n• colar\n• pulseira\n• choker");
           } else if (t.indexOf("frete") >= 0 || t.indexOf("entrega") >= 0 || t.indexOf("bairro") >= 0) {
             bot("Me diz seu bairro/cidade que eu confirmo a entrega 😊");
           } else if (t.indexOf("pag") >= 0 || t.indexOf("pix") >= 0 || t.indexOf("cart") >= 0) {
-            bot("Aceitamos Pix e cartão. Você prefere Pix ou cartão?");
+            bot("Aceitamos Pix e cartão.\nVocê prefere Pix ou cartão?");
           } else if (t.indexOf("presente") >= 0) {
-            bot("Boa! Pra quem é o presente e qual faixa de valor você quer gastar?");
+            bot("Boa! 😄\nPra quem é o presente e qual faixa de valor você quer gastar?");
           } else {
-            bot("Entendi! Se quiser, eu já te levo pro WhatsApp com essa mensagem pronta ✅");
+            bot("Entendi!\nSe quiser, eu já te levo pro WhatsApp com essa mensagem pronta ✅");
           }
         }, 280);
       }
@@ -302,13 +302,11 @@
         var t = (raw || "").trim();
         if (!t) return "";
 
-        // número puro
         if (t === "1") return QUICK[0].text;
         if (t === "2") return QUICK[1].text;
         if (t === "3") return QUICK[2].text;
         if (t === "4") return QUICK[3].text;
 
-        // "2 frete", "3 - entrega", etc (pega o primeiro número)
         var m = t.match(/^\s*([1-4])\b/);
         if (m && m[1]) return normalizeUserText(m[1]);
 
@@ -318,17 +316,26 @@
       // ===== Events =====
       function openChat() {
         box.style.display = "block";
-        btn.classList.remove("tnp-pulse"); // para o pulso quando abre
+        btn.classList.remove("tnp-pulse");
         body.innerHTML = "";
         log = [];
         bot(WELCOME);
-        bot("Se preferir, digite: 1 Catálogo • 2 Presente • 3 Frete/Entrega • 4 Pagamento");
+
+        // MENU COM QUEBRA DE LINHA (o que você pediu)
+        bot(
+          "Se preferir, digite:\n" +
+          "1 - Ver catálogo\n" +
+          "2 - Comprar presente\n" +
+          "3 - Frete / Entrega\n" +
+          "4 - Pagamento"
+        );
+
         layoutChat();
       }
 
       function closeChat() {
         box.style.display = "none";
-        btn.classList.add("tnp-pulse"); // volta o pulso quando fecha
+        btn.classList.add("tnp-pulse");
       }
 
       btn.onclick = function () {
@@ -344,10 +351,8 @@
         if (!raw) return;
         input.value = "";
 
-        // Mostra o que a pessoa digitou
         user(raw);
 
-        // Bot entende o texto normalizado (ex: "2" vira "Quero comprar para presentear.")
         var normalized = normalizeUserText(raw);
         botReply(normalized);
       };
