@@ -1,6 +1,14 @@
-alert("CHAT OK");
 (function () {
+  // =============================
+  //  Tô na Praia - Chat Widget
+  //  WhatsApp: 5521986563334
+  // =============================
 
+  // Evita rodar duas vezes (muito comum em construtores)
+  if (window.__TNP_CHAT_LOADED__) return;
+  window.__TNP_CHAT_LOADED__ = true;
+
+  // ===== CONFIG =====
   var WHATSAPP_NUMBER = "5521986563334";
   var BRAND_NAME = "Tô na Praia";
   var SUBTITLE = "Atendimento rápido";
@@ -13,73 +21,248 @@ alert("CHAT OK");
     { label: "💳 Pagamento", text: "Quais formas de pagamento vocês aceitam?" }
   ];
 
-  function css(e,t){e.style.cssText=t;return e;}
-  function txt(e,t){e.textContent=t;return e;}
+  // ===== HELPERS =====
+  function css(el, rules) { el.style.cssText = rules; return el; }
+  function setText(el, t) { el.textContent = t; return el; }
 
-  var btn=document.createElement("button");
-  txt(btn,"💬");
-  css(btn,"position:fixed;right:18px;bottom:18px;z-index:999999;width:56px;height:56px;border-radius:999px;border:none;background:#25D366;color:#fff;font-size:26px;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,.2);");
-  document.body.appendChild(btn);
+  function el(tag) { return document.createElement(tag); }
 
-  var box=document.createElement("div");
-  css(box,"position:fixed;right:18px;bottom:86px;z-index:999999;width:340px;max-width:calc(100vw - 36px);border-radius:18px;overflow:hidden;box-shadow:0 14px 40px rgba(0,0,0,.25);background:#fff;font-family:Arial,sans-serif;display:none;");
-  document.body.appendChild(box);
+  function safeAppend(parent, child) {
+    if (!parent || !child) return;
+    parent.appendChild(child);
+  }
 
-  var header=document.createElement("div");
-  css(header,"padding:12px 14px;background:#111827;color:#fff;display:flex;justify-content:space-between;align-items:center;");
-  box.appendChild(header);
+  // ===== MAIN START (espera body existir) =====
+  function start() {
+    try {
+      // Não cria novamente se já existir botão na página
+      if (document.getElementById("tnp_chat_btn")) return;
 
-  var hL=document.createElement("div");
-  header.appendChild(hL);
+      // -------- Button --------
+      var btn = el("button");
+      btn.type = "button";
+      btn.id = "tnp_chat_btn";
+      setText(btn, "💬");
+      css(btn,
+        "position:fixed;right:18px;bottom:18px;z-index:999999;" +
+        "width:56px;height:56px;border-radius:999px;border:none;" +
+        "background:#25D366;color:#fff;font-size:26px;cursor:pointer;" +
+        "box-shadow:0 10px 30px rgba(0,0,0,.20);"
+      );
+      safeAppend(document.body, btn);
 
-  var h1=document.createElement("div");
-  css(h1,"font-weight:bold;font-size:14px;");
-  txt(h1,BRAND_NAME);
-  hL.appendChild(h1);
+      // -------- Box --------
+      var box = el("div");
+      box.id = "tnp_chat_box";
+      css(box,
+        "position:fixed;right:18px;bottom:86px;z-index:999999;" +
+        "width:340px;max-width:calc(100vw - 36px);" +
+        "border-radius:18px;overflow:hidden;" +
+        "box-shadow:0 14px 40px rgba(0,0,0,.25);" +
+        "background:#fff;font-family:Arial,sans-serif;display:none;"
+      );
+      safeAppend(document.body, box);
 
-  var h2=document.createElement("div");
-  css(h2,"font-size:11px;opacity:.85;");
-  txt(h2,SUBTITLE);
-  hL.appendChild(h2);
+      // -------- Header --------
+      var header = el("div");
+      css(header,
+        "padding:12px 14px;background:#111827;color:#fff;" +
+        "display:flex;align-items:center;justify-content:space-between;"
+      );
+      safeAppend(box, header);
 
-  var close=document.createElement("button");
-  txt(close,"✕");
-  css(close,"background:transparent;border:none;color:#fff;font-size:18px;cursor:pointer;");
-  header.appendChild(close);
+      var hLeft = el("div");
+      safeAppend(header, hLeft);
 
-  var body=document.createElement("div");
-  css(body,"padding:12px;background:#F3F4F6;height:260px;overflow:auto;font-size:13px;");
-  box.appendChild(body);
+      var h1 = el("div");
+      css(h1, "font-weight:bold;font-size:14px;line-height:1.1;");
+      setText(h1, BRAND_NAME);
+      safeAppend(hLeft, h1);
 
-  var opt=document.createElement("div");
-  css(opt,"padding:10px 12px;background:#fff;border-top:1px solid #E5E7EB;display:flex;gap:8px;flex-wrap:wrap;");
-  box.appendChild(opt);
+      var h2 = el("div");
+      css(h2, "font-size:11px;opacity:.85;margin-top:2px;");
+      setText(h2, SUBTITLE);
+      safeAppend(hLeft, h2);
 
-  var footer=document.createElement("div");
-  css(footer,"padding:10px 12px;background:#fff;border-top:1px solid #E5E7EB;display:flex;gap:8px;");
-  box.appendChild(footer);
+      var close = el("button");
+      close.type = "button";
+      setText(close, "✕");
+      css(close, "background:transparent;border:none;color:#fff;font-size:18px;cursor:pointer;");
+      safeAppend(header, close);
 
-  var input=document.createElement("input");
-  input.placeholder="Escreva aqui…";
-  css(input,"flex:1;border:1px solid #E5E7EB;border-radius:12px;padding:10px;font-size:13px;outline:none;");
-  footer.appendChild(input);
+      // -------- Body --------
+      var body = el("div");
+      body.id = "tnp_chat_body";
+      css(body,
+        "padding:12px;background:#F3F4F6;height:260px;" +
+        "overflow:auto;font-size:13px;"
+      );
+      safeAppend(box, body);
 
-  var send=document.createElement("button");
-  txt(send,"Enviar");
-  css(send,"border:none;border-radius:12px;padding:0 14px;background:#111827;color:#fff;font-size:13px;cursor:pointer;");
-  footer.appendChild(send);
+      // -------- Options --------
+      var opt = el("div");
+      css(opt,
+        "padding:10px 12px;background:#fff;border-top:1px solid #E5E7EB;" +
+        "display:flex;gap:8px;flex-wrap:wrap;"
+      );
+      safeAppend(box, opt);
 
-  var go=document.createElement("button");
-  txt(go,"✅ WhatsApp");
-  css(go,"border:none;border-radius:999px;padding:8px 10px;background:#111827;color:#fff;font-size:12px;cursor:pointer;");
-  opt.appendChild(go);
+      // -------- Footer --------
+      var footer = el("div");
+      css(footer,
+        "padding:10px 12px;background:#fff;border-top:1px solid #E5E7EB;" +
+        "display:flex;gap:8px;align-items:center;"
+      );
+      safeAppend(box, footer);
 
-  var log=[];
+      var input = el("input");
+      input.type = "text";
+      input.placeholder = "Escreva aqui…";
+      css(input,
+        "flex:1;border:1px solid #E5E7EB;border-radius:12px;" +
+        "padding:10px;font-size:13px;outline:none;"
+      );
+      safeAppend(footer, input);
 
-  function bubble(msg,me){
-    var r=document.createElement("div");
-    css(r,"margin:8px 0;display:flex;justify-content:"+(me?"flex-end":"flex-start")+";");
-    var b=document.createElement("div");
-    css(b,"max-width:82%;padding:10px 12px;border-radius:14px;box-shadow:0 6px 16px rgba(0,0,0,.08);"+(me?"background:#2563EB;color:#fff;border-top-right-radius:6px;":"background:#fff;color:#111827;border-top-left-radius:6px;"));
-    txt(b,msg);
-    r.append
+      var send = el("button");
+      send.type = "button";
+      setText(send, "Enviar");
+      css(send,
+        "border:none;border-radius:12px;padding:10px 14px;" +
+        "background:#111827;color:#fff;font-size:13px;cursor:pointer;"
+      );
+      safeAppend(footer, send);
+
+      // WhatsApp button
+      var go = el("button");
+      go.type = "button";
+      setText(go, "✅ WhatsApp");
+      css(go,
+        "border:none;border-radius:999px;padding:8px 10px;" +
+        "background:#111827;color:#fff;font-size:12px;cursor:pointer;"
+      );
+      safeAppend(opt, go);
+
+      // -------- Chat logic --------
+      var log = [];
+
+      function addBubble(msg, who) {
+        var row = el("div");
+        css(row,
+          "margin:8px 0;display:flex;justify-content:" +
+          (who === "user" ? "flex-end" : "flex-start") + ";"
+        );
+
+        var b = el("div");
+        css(b,
+          "max-width:82%;padding:10px 12px;border-radius:14px;" +
+          "box-shadow:0 6px 16px rgba(0,0,0,.08);" +
+          (who === "user"
+            ? "background:#2563EB;color:#fff;border-top-right-radius:6px;"
+            : "background:#fff;color:#111827;border-top-left-radius:6px;")
+        );
+        setText(b, msg);
+
+        safeAppend(row, b);
+        safeAppend(body, row);
+        body.scrollTop = body.scrollHeight;
+      }
+
+      function bot(m) { addBubble(m, "bot"); log.push("Bot: " + m); }
+      function user(m) { addBubble(m, "user"); log.push("Cliente: " + m); }
+
+      function botReply(userText) {
+        var t = (userText || "").toLowerCase();
+
+        setTimeout(function () {
+          if (t.indexOf("cat") >= 0 || t.indexOf("catá") >= 0 || t.indexOf("catalog") >= 0) {
+            bot("Você procura mais: brinco, colar, pulseira ou choker?");
+          } else if (t.indexOf("frete") >= 0 || t.indexOf("entrega") >= 0 || t.indexOf("bairro") >= 0) {
+            bot("Me diz seu bairro/cidade que eu confirmo a entrega 😊");
+          } else if (t.indexOf("pag") >= 0 || t.indexOf("pix") >= 0 || t.indexOf("cart") >= 0) {
+            bot("Aceitamos Pix e cartão. Você prefere Pix ou cartão?");
+          } else if (t.indexOf("presente") >= 0) {
+            bot("Boa! Pra quem é o presente e qual faixa de valor você quer gastar?");
+          } else {
+            bot("Entendi! Se quiser, eu já te levo pro WhatsApp com essa mensagem pronta ✅");
+          }
+        }, 300);
+      }
+
+      function openWpp() {
+        var last = log.slice(-14).join("\n");
+        var msg = "Oi! Vim do microsite.\n\n" + last + "\n\nQuero continuar por aqui no WhatsApp 🙂";
+        var url = "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(msg);
+        window.open(url, "_blank");
+      }
+
+      function mkQuick(label, message) {
+        var b = el("button");
+        b.type = "button";
+        setText(b, label);
+        css(b,
+          "border:1px solid #E5E7EB;background:#fff;border-radius:999px;" +
+          "padding:7px 10px;font-size:12px;cursor:pointer;"
+        );
+        b.onclick = function () {
+          user(message);
+          botReply(message);
+        };
+        // insere antes do botão WhatsApp
+        opt.insertBefore(b, go);
+      }
+
+      for (var i = 0; i < QUICK.length; i++) {
+        mkQuick(QUICK[i].label, QUICK[i].text);
+      }
+
+      // -------- Events --------
+      function openChat() {
+        box.style.display = "block";
+        body.innerHTML = "";
+        log = [];
+        bot(WELCOME);
+      }
+
+      btn.onclick = function () {
+        var visible = box.style.display === "block";
+        box.style.display = visible ? "none" : "block";
+        if (!visible) openChat();
+      };
+
+      close.onclick = function () { box.style.display = "none"; };
+
+      send.onclick = function () {
+        var t = (input.value || "").trim();
+        if (!t) return;
+        input.value = "";
+        user(t);
+        botReply(t);
+      };
+
+      input.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") send.click();
+      });
+
+      go.onclick = openWpp;
+
+    } catch (e) {
+      // Se der erro, ao menos loga para debugging no console
+      try { console.error("TNP chat error:", e); } catch (_) {}
+    }
+  }
+
+  function waitForBody() {
+    if (document.body) return start();
+    setTimeout(waitForBody, 50);
+  }
+
+  // Garante que só executa quando DOM estiver pronto
+  if (document.readyState === "complete" || document.readyState === "interactive") {
+    waitForBody();
+  } else {
+    document.addEventListener("DOMContentLoaded", waitForBody);
+  }
+
+})();
+
