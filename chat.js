@@ -1,3 +1,4 @@
+alert("CHAT OK");
 (function () {
 
   var WHATSAPP_NUMBER = "5521986563334";
