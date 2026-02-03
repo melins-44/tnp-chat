@@ -19,10 +19,10 @@
 
   // Ordem: 1 catálogo | 2 presente | 3 frete | 4 pagamento
   var QUICK = [
-    { n: "1", label: "🛍️ Ver catálogo", text: "Quero ver o catálogo." },
-    { n: "2", label: "🎁 Comprar presente", text: "Quero comprar para presentear." },
-    { n: "3", label: "🚚 Frete / Entrega", text: "Queria saber sobre frete e entrega." },
-    { n: "4", label: "💳 Pagamento", text: "Quais formas de pagamento vocês aceitam?" }
+    { n: "1", label: "🛍️ 1 - Ver catálogo", text: "Quero ver o catálogo." },
+    { n: "2", label: "🎁 2 - Comprar presente", text: "Quero comprar para presentear." },
+    { n: "3", label: "🚚 3 - Frete / Entrega", text: "Queria saber sobre frete e entrega." },
+    { n: "4", label: "💳 4 - Pagamento", text: "Quais formas de pagamento vocês aceitam?" }
   ];
 
   // ===== HELPERS =====
