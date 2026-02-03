@@ -80,7 +80,7 @@ css(btn,
 btn.innerHTML =
   '<img src="https://melins-44.github.io/tnp-chat/chat-icon.png" ' +
   'alt="Chat" ' +
-  'style="width:30px;height:30px;object-fit:contain;display:block;" />';
+  'style="width:50px;height:50px;object-fit:contain;display:block;" />';
 
 
 btn.onmouseenter = function () {
