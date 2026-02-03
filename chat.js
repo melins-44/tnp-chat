@@ -1,9 +1,10 @@
 (function () {
   // =============================
   //  Tô na Praia - Chat Widget
+  //  WhatsApp: 5521986563334
   // =============================
 
-  // Evita execução duplicada
+  // Evita rodar duas vezes (NextGo/Smallpage às vezes injeta duplicado)
   if (window.__TNP_CHAT_LOADED__) return;
   window.__TNP_CHAT_LOADED__ = true;
 
@@ -13,6 +14,9 @@
   var SUBTITLE = "Atendimento rápido";
   var WELCOME = "Oi! 😊 Posso te ajudar?";
 
+  var ICON_URL = "https://melins-44.github.io/tnp-chat/chat-icon.png";
+  var TIP_TEXT = "Tire suas dúvidas aqui";
+
   var QUICK = [
     { label: "🛍️ Ver catálogo", text: "Quero ver o catálogo." },
     { label: "🎁 Comprar presente", text: "Quero comprar para presentear." },
@@ -21,200 +25,306 @@
   ];
 
   // ===== HELPERS =====
-  function el(t) { return document.createElement(t); }
-  function css(e, r) { e.style.cssText = r; return e; }
-  function txt(e, t) { e.textContent = t; return e; }
-  function add(p, c) { if (p && c) p.appendChild(c); }
+  function el(tag) { return document.createElement(tag); }
+  function css(node, rules) { node.style.cssText = rules; return node; }
+  function setText(node, t) { node.textContent = t; return node; }
+  function safeAppend(parent, child) { if (parent && child) parent.appendChild(child); }
 
-  // ===== START =====
+  // ===== MAIN START (espera body existir) =====
   function start() {
+    try {
+      if (document.getElementById("tnp_chat_btn")) return;
 
-    // ===== CSS animação pulsar =====
-    var style = el("style");
-    style.textContent = `
-      @keyframes tnpPulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.06); }
-        100% { transform: scale(1); }
-      }
-      .tnp-pulse {
-        animation: tnpPulse 2.4s ease-in-out infinite;
-      }
-      .tnp-pulse:hover {
-        animation-play-state: paused;
-      }
-    `;
-    document.head.appendChild(style);
+      // ---- CSS (pulse) ----
+      var style = el("style");
+      style.textContent = `
+        @keyframes tnpPulse {
+          0%   { transform: scale(1); }
+          50%  { transform: scale(1.06); }
+          100% { transform: scale(1); }
+        }
+        .tnp-pulse { animation: tnpPulse 2.4s ease-in-out infinite; }
+        .tnp-pulse:hover { animation-play-state: paused; }
+      `;
+      document.head.appendChild(style);
 
-    // Evita recriar
-    if (document.getElementById("tnp_chat_btn")) return;
-
-    // ===== Floating CTA =====
-    var wrap = el("div");
-    css(wrap,
-      "position:fixed;right:18px;bottom:18px;z-index:999999;" +
-      "display:flex;flex-direction:column;align-items:flex-end;gap:8px;"
-    );
-    add(document.body, wrap);
-
-    var tip = el("div");
-    txt(tip, "Tire suas dúvidas aqui");
-    css(tip,
-      "background:rgba(17,24,39,.92);color:#fff;" +
-      "padding:6px 10px;border-radius:12px;font:12px Arial;" +
-      "box-shadow:0 10px 30px rgba(0,0,0,.18);" +
-      "user-select:none;"
-    );
-    add(wrap, tip);
-
-    var btn = el("button");
-    btn.id = "tnp_chat_btn";
-    btn.className = "tnp-pulse";
-    css(btn,
-      "width:56px;height:56px;border:none;background:transparent;" +
-      "cursor:pointer;padding:0;"
-    );
-
-    btn.innerHTML =
-      '<img src="https://melins-44.github.io/tnp-chat/chat-icon.png" ' +
-      'style="width:40px;height:40px;display:block;' +
-      'filter:drop-shadow(0 10px 24px rgba(0,0,0,.25));" />';
-
-    add(wrap, btn);
-
-    // ===== Chat Box =====
-    var box = el("div");
-    css(box,
-      "position:fixed;right:18px;bottom:86px;z-index:999999;" +
-      "width:340px;max-width:calc(100vw - 36px);" +
-      "border-radius:18px;overflow:hidden;" +
-      "box-shadow:0 14px 40px rgba(0,0,0,.25);" +
-      "background:#fff;font-family:Arial;display:none;"
-    );
-    add(document.body, box);
-
-    var header = el("div");
-    css(header,
-      "padding:12px 14px;background:#111827;color:#fff;" +
-      "display:flex;justify-content:space-between;"
-    );
-    add(box, header);
-
-    var h = el("div");
-    txt(h, BRAND_NAME);
-    css(h, "font-weight:bold;font-size:14px;");
-    add(header, h);
-
-    var close = el("button");
-    txt(close, "✕");
-    css(close, "background:none;border:none;color:#fff;font-size:18px;cursor:pointer;");
-    add(header, close);
-
-    var body = el("div");
-    css(body, "padding:12px;background:#F3F4F6;overflow:auto;font-size:13px;");
-    add(box, body);
-
-    var opt = el("div");
-    css(opt,
-      "padding:10px;background:#fff;border-top:1px solid #E5E7EB;" +
-      "display:flex;gap:8px;flex-wrap:wrap;"
-    );
-    add(box, opt);
-
-    var footer = el("div");
-    css(footer,
-      "padding:10px;background:#fff;border-top:1px solid #E5E7EB;" +
-      "display:flex;gap:8px;"
-    );
-    add(box, footer);
-
-    var input = el("input");
-    input.placeholder = "Escreva aqui…";
-    css(input, "flex:1;padding:10px;border-radius:12px;border:1px solid #E5E7EB;");
-    add(footer, input);
-
-    var send = el("button");
-    txt(send, "Enviar");
-    css(send,
-      "background:#111827;color:#fff;border:none;" +
-      "padding:10px 14px;border-radius:12px;cursor:pointer;"
-    );
-    add(footer, send);
-
-    var go = el("button");
-    txt(go, "WhatsApp");
-    css(go,
-      "border:none;background:#111827;color:#fff;" +
-      "padding:8px 12px;border-radius:999px;cursor:pointer;"
-    );
-    add(opt, go);
-
-    // ===== Layout Responsivo =====
-    function layoutChat() {
-      var vh = window.innerHeight;
-      var maxH = vh - 28;
-      box.style.maxHeight = maxH + "px";
-      body.style.height = (maxH - header.offsetHeight - footer.offsetHeight - opt.offsetHeight) + "px";
-    }
-
-    // ===== Chat Logic =====
-    var log = [];
-
-    function bubble(t, me) {
-      var r = el("div");
-      css(r, "margin:6px 0;display:flex;justify-content:" + (me ? "flex-end" : "flex-start"));
-      var b = el("div");
-      txt(b, t);
-      css(b,
-        "max-width:80%;padding:10px;border-radius:14px;" +
-        (me ? "background:#2563EB;color:#fff;" : "background:#fff;color:#111;")
+      // -------- Floating CTA (label + button) --------
+      var wrap = el("div");
+      wrap.id = "tnp_chat_wrap";
+      css(wrap,
+        "position:fixed;right:18px;bottom:18px;z-index:999999;" +
+        "display:flex;flex-direction:column;align-items:flex-end;gap:8px;"
       );
-      add(r, b); add(body, r); body.scrollTop = body.scrollHeight;
+      safeAppend(document.body, wrap);
+
+      var tip = el("div");
+      tip.id = "tnp_chat_tip";
+      setText(tip, TIP_TEXT);
+      css(tip,
+        "background:rgba(17,24,39,.92);color:#fff;" +
+        "padding:6px 10px;border-radius:12px;" +
+        "font:12px Arial;letter-spacing:.2px;" +
+        "box-shadow:0 10px 30px rgba(0,0,0,.18);" +
+        "backdrop-filter:saturate(140%) blur(6px);" +
+        "user-select:none;"
+      );
+      safeAppend(wrap, tip);
+
+      // Botão (somente ícone, fundo transparente)
+      var btn = el("button");
+      btn.type = "button";
+      btn.id = "tnp_chat_btn";
+      btn.className = "tnp-pulse";
+      btn.setAttribute("aria-label", "Abrir chat");
+      css(btn,
+        "width:56px;height:56px;border:none;background:transparent;" +
+        "cursor:pointer;display:flex;align-items:center;justify-content:center;" +
+        "padding:0;"
+      );
+
+      btn.innerHTML =
+        '<img src="' + ICON_URL + '" alt="Chat" ' +
+        'style="width:40px;height:40px;object-fit:contain;display:block;' +
+        'filter:drop-shadow(0 10px 24px rgba(0,0,0,.25));" />';
+
+      safeAppend(wrap, btn);
+
+      // -------- Box --------
+      var box = el("div");
+      box.id = "tnp_chat_box";
+      css(box,
+        "position:fixed;right:18px;bottom:86px;z-index:999999;" +
+        "width:340px;max-width:calc(100vw - 36px);" +
+        "border-radius:18px;overflow:hidden;" +
+        "box-shadow:0 14px 40px rgba(0,0,0,.25);" +
+        "background:#fff;font-family:Arial,sans-serif;display:none;"
+      );
+      safeAppend(document.body, box);
+
+      // -------- Header --------
+      var header = el("div");
+      css(header,
+        "padding:12px 14px;background:#111827;color:#fff;" +
+        "display:flex;align-items:center;justify-content:space-between;"
+      );
+      safeAppend(box, header);
+
+      var hLeft = el("div");
+      safeAppend(header, hLeft);
+
+      var h1 = el("div");
+      css(h1, "font-weight:bold;font-size:14px;line-height:1.1;");
+      setText(h1, BRAND_NAME);
+      safeAppend(hLeft, h1);
+
+      var h2 = el("div");
+      css(h2, "font-size:11px;opacity:.85;margin-top:2px;");
+      setText(h2, SUBTITLE);
+      safeAppend(hLeft, h2);
+
+      var close = el("button");
+      close.type = "button";
+      setText(close, "✕");
+      css(close, "background:transparent;border:none;color:#fff;font-size:18px;cursor:pointer;");
+      safeAppend(header, close);
+
+      // -------- Body --------
+      var body = el("div");
+      body.id = "tnp_chat_body";
+      css(body,
+        "padding:12px;background:#F3F4F6;" +
+        "overflow:auto;font-size:13px;"
+      );
+      safeAppend(box, body);
+
+      // -------- Options (quick + whatsapp) --------
+      var opt = el("div");
+      css(opt,
+        "padding:10px 12px;background:#fff;border-top:1px solid #E5E7EB;" +
+        "display:flex;gap:8px;flex-wrap:wrap;"
+      );
+      safeAppend(box, opt);
+
+      // -------- Footer --------
+      var footer = el("div");
+      css(footer,
+        "padding:10px 12px;background:#fff;border-top:1px solid #E5E7EB;" +
+        "display:flex;gap:8px;align-items:center;"
+      );
+      safeAppend(box, footer);
+
+      var input = el("input");
+      input.type = "text";
+      input.placeholder = "Escreva aqui…";
+      css(input,
+        "flex:1;border:1px solid #E5E7EB;border-radius:12px;" +
+        "padding:10px;font-size:13px;outline:none;"
+      );
+      safeAppend(footer, input);
+
+      var send = el("button");
+      send.type = "button";
+      setText(send, "Enviar");
+      css(send,
+        "border:none;border-radius:12px;padding:10px 14px;" +
+        "background:#111827;color:#fff;font-size:13px;cursor:pointer;"
+      );
+      safeAppend(footer, send);
+
+      // Botão WhatsApp (fica depois dos quick buttons)
+      var go = el("button");
+      go.type = "button";
+      setText(go, "✅ WhatsApp");
+      css(go,
+        "border:none;border-radius:999px;padding:8px 10px;" +
+        "background:#111827;color:#fff;font-size:12px;cursor:pointer;"
+      );
+      safeAppend(opt, go);
+
+      // ===== Layout responsivo (corrige paisagem mobile) =====
+      function layoutChat() {
+        var vh = window.innerHeight || document.documentElement.clientHeight || 700;
+        var safeTop = 14;
+        var safeBottom = 14;
+
+        var headerH = header.offsetHeight || 56;
+        var footerH = footer.offsetHeight || 56;
+        var optH = opt.offsetHeight || 48;
+
+        var maxBoxH = vh - safeTop - safeBottom;
+
+        box.style.maxHeight = maxBoxH + "px";
+        box.style.overflow = "hidden";
+
+        var bodyShowH = maxBoxH - headerH - footerH - optH;
+        if (bodyShowH < 120) bodyShowH = 120;
+
+        body.style.height = bodyShowH + "px";
+      }
+
+      window.addEventListener("resize", layoutChat);
+      window.addEventListener("orientationchange", function () {
+        setTimeout(layoutChat, 250);
+      });
+
+      // ===== Chat logic =====
+      var log = [];
+
+      function addBubble(msg, who) {
+        var row = el("div");
+        css(row,
+          "margin:8px 0;display:flex;justify-content:" +
+          (who === "user" ? "flex-end" : "flex-start") + ";"
+        );
+
+        var b = el("div");
+        css(b,
+          "max-width:82%;padding:10px 12px;border-radius:14px;" +
+          "box-shadow:0 6px 16px rgba(0,0,0,.08);" +
+          (who === "user"
+            ? "background:#2563EB;color:#fff;border-top-right-radius:6px;"
+            : "background:#fff;color:#111827;border-top-left-radius:6px;")
+        );
+        setText(b, msg);
+
+        safeAppend(row, b);
+        safeAppend(body, row);
+        body.scrollTop = body.scrollHeight;
+      }
+
+      function bot(m) { addBubble(m, "bot"); log.push("Bot: " + m); }
+      function user(m) { addBubble(m, "user"); log.push("Cliente: " + m); }
+
+      function botReply(userText) {
+        var t = (userText || "").toLowerCase();
+
+        setTimeout(function () {
+          if (t.indexOf("cat") >= 0 || t.indexOf("catá") >= 0 || t.indexOf("catalog") >= 0) {
+            bot("Você procura mais: brinco, colar, pulseira ou choker?");
+          } else if (t.indexOf("frete") >= 0 || t.indexOf("entrega") >= 0 || t.indexOf("bairro") >= 0) {
+            bot("Me diz seu bairro/cidade que eu confirmo a entrega 😊");
+          } else if (t.indexOf("pag") >= 0 || t.indexOf("pix") >= 0 || t.indexOf("cart") >= 0) {
+            bot("Aceitamos Pix e cartão. Você prefere Pix ou cartão?");
+          } else if (t.indexOf("presente") >= 0) {
+            bot("Boa! Pra quem é o presente e qual faixa de valor você quer gastar?");
+          } else {
+            bot("Entendi! Se quiser, eu já te levo pro WhatsApp com essa mensagem pronta ✅");
+          }
+        }, 300);
+      }
+
+      function openWpp() {
+        var last = log.slice(-14).join("\n");
+        var msg = "Oi! Vim do microsite.\n\n" + last + "\n\nQuero continuar por aqui no WhatsApp 🙂";
+        var url = "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(msg);
+        window.open(url, "_blank");
+      }
+
+      function mkQuick(label, message) {
+        var b = el("button");
+        b.type = "button";
+        setText(b, label);
+        css(b,
+          "border:1px solid #E5E7EB;background:#fff;border-radius:999px;" +
+          "padding:7px 10px;font-size:12px;cursor:pointer;"
+        );
+        b.onclick = function () {
+          user(message);
+          botReply(message);
+        };
+        opt.insertBefore(b, go);
+      }
+
+      for (var i = 0; i < QUICK.length; i++) {
+        mkQuick(QUICK[i].label, QUICK[i].text);
+      }
+
+      // ===== Events =====
+      function openChat() {
+        box.style.display = "block";
+        // para o pulso quando abre (fica mais “premium”)
+        btn.classList.remove("tnp-pulse");
+        body.innerHTML = "";
+        log = [];
+        bot(WELCOME);
+        layoutChat();
+      }
+
+      btn.onclick = function () {
+        var visible = box.style.display === "block";
+        box.style.display = visible ? "none" : "block";
+        if (!visible) openChat();
+        else btn.classList.add("tnp-pulse");
+      };
+
+      close.onclick = function () {
+        box.style.display = "none";
+        btn.classList.add("tnp-pulse");
+      };
+
+      send.onclick = function () {
+        var t = (input.value || "").trim();
+        if (!t) return;
+        input.value = "";
+        user(t);
+        botReply(t);
+      };
+
+      input.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") send.click();
+      });
+
+      go.onclick = openWpp;
+
+    } catch (e) {
+      try { console.error("TNP chat error:", e); } catch (_) {}
     }
-
-    function bot(t) { bubble(t, false); log.push("Bot: " + t); }
-    function user(t) { bubble(t, true); log.push("Cliente: " + t); }
-
-    function openChat() {
-      box.style.display = "block";
-      btn.classList.remove("tnp-pulse");
-      body.innerHTML = "";
-      log = [];
-      bot(WELCOME);
-      layoutChat();
-    }
-
-    btn.onclick = function () {
-      var v = box.style.display === "block";
-      box.style.display = v ? "none" : "block";
-      if (!v) openChat();
-    };
-
-    close.onclick = function () {
-      box.style.display = "none";
-      btn.classList.add("tnp-pulse");
-    };
-
-    send.onclick = function () {
-      if (!input.value) return;
-      user(input.value);
-      input.value = "";
-    };
-
-    go.onclick = function () {
-      window.open("https://wa.me/" + WHATSAPP_NUMBER, "_blank");
-    };
-
-    window.addEventListener("resize", layoutChat);
-    window.addEventListener("orientationchange", function () {
-      setTimeout(layoutChat, 300);
-    });
   }
 
-  function wait() {
-    if (document.body) start();
-    else setTimeout(wait, 50);
+  function waitForBody() {
+    if (document.body) return start();
+    setTimeout(waitForBody, 50);
   }
 
-  wait();
+  waitForBody();
 })();
