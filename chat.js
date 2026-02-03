@@ -34,6 +34,24 @@
 
   // ===== MAIN START (espera body existir) =====
   function start() {
+
+    // Animação de pulsar suave
+var style = document.createElement("style");
+style.innerHTML = `
+@keyframes tnpPulse {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+.tnp-pulse {
+  animation: tnpPulse 2.2s ease-in-out infinite;
+}
+.tnp-pulse:hover {
+  animation-play-state: paused;
+}
+`;
+document.head.appendChild(style);
+
     try {
       // Não cria novamente se já existir botão na página
       if (document.getElementById("tnp_chat_btn")) return;
