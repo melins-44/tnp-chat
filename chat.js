@@ -103,7 +103,7 @@
       );
       btn.innerHTML =
         '<img src="' + ICON_URL + '" alt="Chat" ' +
-        'style="width:40px;height:40px;object-fit:contain;display:block;' +
+        'style="width:60px;height:60px;object-fit:contain;display:block;' +
         'filter:drop-shadow(0 10px 24px rgba(0,0,0,.25));" />';
 
       safeAppend(wrap, btn);
