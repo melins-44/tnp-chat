@@ -17,11 +17,12 @@
   var ICON_URL = "https://melins-44.github.io/tnp-chat/chat-icon.png";
   var TIP_TEXT = "Tire suas dúvidas aqui";
 
+  // Ordem: 1 catálogo | 2 presente | 3 frete | 4 pagamento
   var QUICK = [
-    { label: "🛍️ Ver catálogo", text: "Quero ver o catálogo." },
-    { label: "🎁 Comprar presente", text: "Quero comprar para presentear." },
-    { label: "🚚 Frete / Entrega", text: "Queria saber sobre frete e entrega." },
-    { label: "💳 Pagamento", text: "Quais formas de pagamento vocês aceitam?" }
+    { n: "1", label: "🛍️ Ver catálogo", text: "Quero ver o catálogo." },
+    { n: "2", label: "🎁 Comprar presente", text: "Quero comprar para presentear." },
+    { n: "3", label: "🚚 Frete / Entrega", text: "Queria saber sobre frete e entrega." },
+    { n: "4", label: "💳 Pagamento", text: "Quais formas de pagamento vocês aceitam?" }
   ];
 
   // ===== HELPERS =====
@@ -29,6 +30,11 @@
   function css(node, rules) { node.style.cssText = rules; return node; }
   function setText(node, t) { node.textContent = t; return node; }
   function safeAppend(parent, child) { if (parent && child) parent.appendChild(child); }
+
+  function safeHeadAppend(styleEl) {
+    // Em alguns construtores, head existe mas o append pode atrasar; aqui é simples
+    try { document.head.appendChild(styleEl); } catch (_) {}
+  }
 
   // ===== MAIN START (espera body existir) =====
   function start() {
@@ -46,7 +52,7 @@
         .tnp-pulse { animation: tnpPulse 2.4s ease-in-out infinite; }
         .tnp-pulse:hover { animation-play-state: paused; }
       `;
-      document.head.appendChild(style);
+      safeHeadAppend(style);
 
       // -------- Floating CTA (label + button) --------
       var wrap = el("div");
@@ -155,7 +161,7 @@
 
       var input = el("input");
       input.type = "text";
-      input.placeholder = "Escreva aqui…";
+      input.placeholder = "Escreva aqui… (ou digite 1, 2, 3, 4)";
       css(input,
         "flex:1;border:1px solid #E5E7EB;border-radius:12px;" +
         "padding:10px;font-size:13px;outline:none;"
@@ -181,23 +187,38 @@
       );
       safeAppend(opt, go);
 
-      // ===== Layout responsivo (corrige paisagem mobile) =====
+      // ===== Layout responsivo (corrige paisagem mobile: não corta em cima nem embaixo) =====
       function layoutChat() {
         var vh = window.innerHeight || document.documentElement.clientHeight || 700;
-        var safeTop = 14;
-        var safeBottom = 14;
 
+        var safeTop = 12;
+        var safeBottom = 12;
+
+        var wrapH = (wrap && wrap.offsetHeight) ? wrap.offsetHeight : 80;
+        var bottomGap = 12;
+
+        // wrap está em bottom:18px, então o chat deve ficar acima disso
+        var bottomOffset = 18 + wrapH + bottomGap;
+
+        // Ajusta bottom do chat dinamicamente (para não cortar embaixo)
+        box.style.bottom = bottomOffset + "px";
+
+        // Alturas internas
         var headerH = header.offsetHeight || 56;
         var footerH = footer.offsetHeight || 56;
         var optH = opt.offsetHeight || 48;
 
-        var maxBoxH = vh - safeTop - safeBottom;
+        // Altura máxima do box considerando o bottomOffset
+        var maxBoxH = vh - safeTop - bottomOffset - safeBottom;
+
+        // Se a tela for muito baixa, garante que ainda caiba algo útil
+        if (maxBoxH < 240) maxBoxH = 240;
 
         box.style.maxHeight = maxBoxH + "px";
         box.style.overflow = "hidden";
 
         var bodyShowH = maxBoxH - headerH - footerH - optH;
-        if (bodyShowH < 120) bodyShowH = 120;
+        if (bodyShowH < 110) bodyShowH = 110;
 
         body.style.height = bodyShowH + "px";
       }
@@ -250,7 +271,7 @@
           } else {
             bot("Entendi! Se quiser, eu já te levo pro WhatsApp com essa mensagem pronta ✅");
           }
-        }, 300);
+        }, 280);
       }
 
       function openWpp() {
@@ -260,54 +281,75 @@
         window.open(url, "_blank");
       }
 
-      function mkQuick(label, message) {
+      function mkQuick(item) {
         var b = el("button");
         b.type = "button";
-        setText(b, label);
+        setText(b, item.label);
         css(b,
           "border:1px solid #E5E7EB;background:#fff;border-radius:999px;" +
           "padding:7px 10px;font-size:12px;cursor:pointer;"
         );
         b.onclick = function () {
-          user(message);
-          botReply(message);
+          user(item.text);
+          botReply(item.text);
         };
         opt.insertBefore(b, go);
       }
 
-      for (var i = 0; i < QUICK.length; i++) {
-        mkQuick(QUICK[i].label, QUICK[i].text);
+      for (var i = 0; i < QUICK.length; i++) mkQuick(QUICK[i]);
+
+      function normalizeUserText(raw) {
+        var t = (raw || "").trim();
+        if (!t) return "";
+
+        // número puro
+        if (t === "1") return QUICK[0].text;
+        if (t === "2") return QUICK[1].text;
+        if (t === "3") return QUICK[2].text;
+        if (t === "4") return QUICK[3].text;
+
+        // "2 frete", "3 - entrega", etc (pega o primeiro número)
+        var m = t.match(/^\s*([1-4])\b/);
+        if (m && m[1]) return normalizeUserText(m[1]);
+
+        return t;
       }
 
       // ===== Events =====
       function openChat() {
         box.style.display = "block";
-        // para o pulso quando abre (fica mais “premium”)
-        btn.classList.remove("tnp-pulse");
+        btn.classList.remove("tnp-pulse"); // para o pulso quando abre
         body.innerHTML = "";
         log = [];
         bot(WELCOME);
+        bot("Se preferir, digite: 1 Catálogo • 2 Presente • 3 Frete/Entrega • 4 Pagamento");
         layoutChat();
+      }
+
+      function closeChat() {
+        box.style.display = "none";
+        btn.classList.add("tnp-pulse"); // volta o pulso quando fecha
       }
 
       btn.onclick = function () {
         var visible = box.style.display === "block";
-        box.style.display = visible ? "none" : "block";
-        if (!visible) openChat();
-        else btn.classList.add("tnp-pulse");
+        if (visible) closeChat();
+        else openChat();
       };
 
-      close.onclick = function () {
-        box.style.display = "none";
-        btn.classList.add("tnp-pulse");
-      };
+      close.onclick = closeChat;
 
       send.onclick = function () {
-        var t = (input.value || "").trim();
-        if (!t) return;
+        var raw = (input.value || "").trim();
+        if (!raw) return;
         input.value = "";
-        user(t);
-        botReply(t);
+
+        // Mostra o que a pessoa digitou
+        user(raw);
+
+        // Bot entende o texto normalizado (ex: "2" vira "Quero comprar para presentear.")
+        var normalized = normalizeUserText(raw);
+        botReply(normalized);
       };
 
       input.addEventListener("keydown", function (e) {
