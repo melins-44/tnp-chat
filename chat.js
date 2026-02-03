@@ -11,7 +11,7 @@
   var WHATSAPP_NUMBER = "5521986563334";
   var BRAND_NAME = "Tô na Praia";
   var SUBTITLE = "Atendimento rápido";
-  var WELCOME = "Oi! 😊 Posso te ajudar aa?";
+  var WELCOME = "Oi! 😊 Posso te ajudar ?";
 
   var ICON_URL = "https://melins-44.github.io/tnp-chat/chat-icon.png";
   var TIP_TEXT = "Tire suas dúvidas aqui";
