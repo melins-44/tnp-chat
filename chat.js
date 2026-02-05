@@ -1,14 +1,14 @@
-
 (function () {
   // =============================
   //  Tô na Praia - Chat Widget
   //  WhatsApp: 5521986563334
   // =============================
 
-  // Recarrega se não existir o botão (evita "sumir" em SPA)
+  // Não trava em SPA: se já carregou mas não existe botão, recria
   if (window.__TNP_CHAT_LOADED__ && document.getElementById("tnp_chat_btn")) return;
   window.__TNP_CHAT_LOADED__ = true;
 
+  // ===== CONFIG =====
   var WHATSAPP_NUMBER = "5521986563334";
   var BRAND_NAME = "Tô na Praia";
   var SUBTITLE = "Atendimento rápido";
@@ -19,21 +19,26 @@
   var ICON_URL = "https://melins-44.github.io/tnp-chat/icorobo.png";
   var TIP_TEXT = "Tire suas dúvidas aqui";
 
+  // ===== CORES (Tô na Praia - verde clarinho) =====
   var TNP_BTN_BG = "#DFF5EA";
   var TNP_BTN_BG_HOVER = "#C7EBDD";
   var TNP_BTN_TEXT = "#065F46";
 
+  // ===== MENUS =====
+  // Menu principal
   var MENU_MAIN = [
     { label: "1 - Quem somos", action: "who" },
     { label: "2 - Como comprar", action: "how" },
-    { label: "3 - Fale conosco", action: "whatsapp" }
+    { label: "3 - Fale conosco ↗", action: "whatsapp" }
   ];
 
-  var ACTION_FOOTER = [
-    { label: "Voltar ao Menu", action: "back_menu" },
-    { label: "Falar no WhatsApp", action: "whatsapp" }
+  // Menu de ações (aparece ao final do Quem somos / Como comprar)
+  var MENU_ACTIONS = [
+    { label: "1 - Voltar ao Menu", action: "back_menu" },
+    { label: "2 - Falar no WhatsApp ↗", action: "whatsapp" }
   ];
 
+  // ===== HELPERS =====
   function el(tag) { return document.createElement(tag); }
   function css(node, rules) { node.style.cssText = rules; return node; }
   function setText(node, t) { node.textContent = t; return node; }
@@ -51,27 +56,27 @@
 
   function textWhoWeAre() {
     return (
-      "A Tô na Praia é uma marca criada pela Tati com um propósito simples: levar a energia do mar para o seu dia a dia.\n\n" +
+      "A Tô na Praia é uma marca criada pela Tati com um propósito simples: levar a energia do mar para o seu dia a dia 🌊\n\n" +
       "A gente trabalha com peças escolhidas com carinho (bijus e acessórios com vibe praiana), pensando em:\n" +
-      "- leveza e estilo\n" +
-      "- bom gosto para usar ou presentear\n" +
-      "- atendimento humano e próximo\n\n" +
-      "Se quiser, eu te levo para conversar no WhatsApp e te ajudar a escolher."
+      "• leveza e estilo\n" +
+      "• bom gosto para usar ou presentear\n" +
+      "• atendimento humano e próximo\n\n" +
+      "Se quiser, eu te levo para conversar no WhatsApp e te ajudar a escolher a peça ideal 🙂"
     );
   }
 
   function textHowToBuy() {
     return (
-      "Você pode comprar de um jeito bem fácil:\n\n" +
+      "Você pode comprar de um jeito bem fácil 😊\n\n" +
       "1) Baixar o nosso catálogo para conhecer as peças e nos chamar no WhatsApp.\n\n" +
       "2) Ou, de forma mais prática, clicar nos produtos desejados, montar seu carrinho de compras e encerrar a compra diretamente com a gente, no WhatsApp.\n\n" +
-      "Se quiser, eu já te levo para o WhatsApp com uma mensagem pronta."
+      "Se quiser, eu já te levo para o WhatsApp com uma mensagem pronta ✅"
     );
   }
 
   function start() {
     try {
-      // Se já existe botão de uma execução antiga, remove pra recriar limpo
+      // limpa instâncias antigas (se NextGo mexer no DOM)
       var oldBtn = document.getElementById("tnp_chat_btn");
       var oldBox = document.getElementById("tnp_chat_box");
       var oldWrap = document.getElementById("tnp_chat_wrap");
@@ -155,7 +160,7 @@
 
       var input = el("input");
       input.type = "text";
-      input.placeholder = "Digite 1, 2 ou 3…";
+      input.placeholder = "Digite 1, 2, 3... ou 'menu' / 'whatsapp'";
       css(input, "flex:1;border:1px solid #E5E7EB;border-radius:12px;padding:10px;font-size:13px;outline:none;");
       safeAppend(footer, input);
 
@@ -184,8 +189,10 @@
         window.visualViewport.addEventListener("scroll", layoutChat);
       }
 
-      var journey = [];
-      var lastMenu = null;
+      // ===== Estado do chat =====
+      var journey = [];        // caminho escolhido
+      var lastMenu = null;     // menu atual na tela (array de itens)
+      var lastMenuName = "";   // nome do menu atual (ex: "main", "actions")
 
       function addBubble(msg, who) {
         var row = el("div");
@@ -204,10 +211,13 @@
       function bot(m) { addBubble(m, "bot"); }
       function user(m) { addBubble(m, "user"); }
 
-      function addButtons(items) {
+      function addButtons(items, menuName) {
         lastMenu = items;
+        lastMenuName = menuName || "";
+
         var block = el("div");
         css(block, "margin:8px 0;display:flex;flex-direction:column;gap:10px;align-items:stretch;");
+
         for (var i = 0; i < items.length; i++) {
           (function (it) {
             var qb = el("button");
@@ -229,62 +239,138 @@
             safeAppend(block, qb);
           })(items[i]);
         }
+
         safeAppend(body, block);
         body.scrollTop = body.scrollHeight;
       }
 
       function invalidOption() {
-        bot("Desculpe, não consegui entender. Por favor, escolha uma opção abaixo.");
-        if (lastMenu) setTimeout(function () { addButtons(lastMenu); }, 200);
+        bot("Desculpe, não consegui entender 😕\nEscolha uma opção abaixo.");
+        if (lastMenu) setTimeout(function () { addButtons(lastMenu, lastMenuName); }, 180);
       }
 
       function openWpp(tag) {
         var path = journey.length ? journey.join(" > ") : "Menu inicial";
-        var text = "Oi! Passei pelo chatbot da Tô na Praia.\nEu naveguei por: " + path + ".\n";
+        var text =
+          "Oi! Passei pelo chatbot da Tô na Praia 😊\n" +
+          "Eu naveguei por: " + path + ".\n";
+
         if (tag) text += "Quero conversar mais sobre: " + tag + ".\n";
+
         text += "\nPodem me ajudar?";
+
         window.open("https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(text), "_blank");
       }
 
+      // ===== Interpretação de texto (o pulo do gato) =====
+      function cleanText(raw) {
+        return (raw || "").toLowerCase()
+          .replace(/\s+/g, " ")
+          .trim();
+      }
+
+      function extractLeadingNumber(raw) {
+        // pega "1", "1 - algo", "1." etc
+        var m = (raw || "").match(/^\s*([0-9]+)\b/);
+        return m ? parseInt(m[1], 10) : null;
+      }
+
+      function isMenuKeyword(t) {
+        // menu / voltar / inicio / início
+        return (
+          t === "menu" ||
+          t === "voltar" ||
+          t === "inicio" ||
+          t === "início" ||
+          t === "começo" ||
+          t === "comeco" ||
+          t === "start"
+        );
+      }
+
+      function isWhatsappKeyword(t) {
+        // whatsapp / wpp / zap / falar / contato
+        return (
+          t.indexOf("whats") >= 0 ||
+          t.indexOf("wpp") >= 0 ||
+          t.indexOf("zap") >= 0 ||
+          t.indexOf("falar") >= 0 ||
+          t.indexOf("contat") >= 0
+        );
+      }
+
+      function pickActionFromCurrentMenuByNumber(n) {
+        if (!lastMenu || !lastMenu.length) return null;
+        if (typeof n !== "number" || isNaN(n)) return null;
+        if (n < 1 || n > lastMenu.length) return null;
+        return lastMenu[n - 1].action || null;
+      }
+
+      function interpretUserInput(raw) {
+        var t = cleanText(raw);
+        if (!t) return null;
+
+        // atalhos globais
+        if (isMenuKeyword(t)) return "back_menu";
+        if (isWhatsappKeyword(t)) return "whatsapp";
+
+        // número (1..N) de acordo com o menu atual
+        var n = extractLeadingNumber(raw);
+        if (n !== null) {
+          var act = pickActionFromCurrentMenuByNumber(n);
+          if (act) return act;
+          return null;
+        }
+
+        // reconhecimento por palavras, dependendo do menu atual:
+        // no menu principal, aceita "quem somos" / "comprar"
+        if (lastMenuName === "main") {
+          if (t.indexOf("quem") >= 0) return "who";
+          if (t.indexOf("compr") >= 0) return "how";
+          if (t.indexOf("fale") >= 0) return "whatsapp";
+        }
+
+        // no menu actions, aceita "voltar" e "whatsapp" já tratamos acima
+        return null;
+      }
+
+      // ===== Ações =====
       function handleAction(action) {
         if (action === "who") {
           journey.push("Quem somos");
           bot(textWhoWeAre());
-          addButtons(ACTION_FOOTER);
+          addButtons(MENU_ACTIONS, "actions");
           return;
         }
+
         if (action === "how") {
           journey.push("Como comprar");
           bot(textHowToBuy());
-          addButtons(ACTION_FOOTER);
+          addButtons(MENU_ACTIONS, "actions");
           return;
         }
+
         if (action === "back_menu") {
           bot("Beleza! Escolha uma opção:");
-          addButtons(MENU_MAIN);
+          addButtons(MENU_MAIN, "main");
           return;
         }
+
         if (action === "whatsapp") {
-          journey.push("Fale conosco");
-          openWpp("atendimento");
+          // se ainda não tem um caminho, registra que veio falar com a gente
+          if (!journey.length) journey.push("Fale conosco");
+          openWpp(journey[journey.length - 1] || "atendimento");
           return;
         }
+
         invalidOption();
       }
 
-      function handleText(raw) {
-        var t = (raw || "").trim();
-        if (t === "1") return handleAction("who");
-        if (t === "2") return handleAction("how");
-        if (t === "3") return handleAction("whatsapp");
-
-        // palavras-chave simples
-        var low = t.toLowerCase();
-        if (low.indexOf("quem") >= 0) return handleAction("who");
-        if (low.indexOf("compr") >= 0) return handleAction("how");
-        if (low.indexOf("cont") >= 0 || low.indexOf("whats") >= 0 || low.indexOf("fale") >= 0) return handleAction("whatsapp");
-
-        invalidOption();
+      // ===== Ciclo de envio =====
+      function processText(raw) {
+        var act = interpretUserInput(raw);
+        if (!act) return invalidOption();
+        handleAction(act);
       }
 
       function openChat() {
@@ -292,10 +378,11 @@
         body.innerHTML = "";
         journey = [];
         lastMenu = null;
+        lastMenuName = "";
 
         bot(WELCOME_1);
         bot(WELCOME_2);
-        addButtons(MENU_MAIN);
+        addButtons(MENU_MAIN, "main");
         layoutChat();
       }
 
@@ -314,15 +401,15 @@
         if (!raw) return;
         input.value = "";
         user(raw);
-        handleText(raw);
+        processText(raw);
       };
 
       input.addEventListener("keydown", function (e) {
         if (e.key === "Enter") send.click();
       });
 
-      // Debug (você pode tirar depois)
-      try { console.log("[TNP Chat] carregado OK"); } catch (_) {}
+      // Debug (pode remover depois)
+      // console.log("[TNP Chat] OK - menus dinâmicos por texto");
 
     } catch (e) {
       try { console.error("TNP chat error:", e); } catch (_) {}
@@ -336,6 +423,7 @@
 
   waitForBody();
 })();
+
 
 
 
