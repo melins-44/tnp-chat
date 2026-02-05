@@ -4,8 +4,9 @@
   //  WhatsApp: 5521986563334
   // =============================
 
-  if (window.__TNP_CHAT_LOADED__) return;
-  window.__TNP_CHAT_LOADED__ = true;
+  if (window.__TNP_CHAT_LOADED__ && document.getElementById("tnp_chat_btn")) return;
+window.__TNP_CHAT_LOADED__ = true;
+
 
   // ===== CONFIG =====
   var WHATSAPP_NUMBER = "5521986563334";
