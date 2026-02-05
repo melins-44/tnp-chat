@@ -4,9 +4,8 @@
   //  WhatsApp: 5521986563334
   // =============================
 
-  if (window.__TNP_CHAT_LOADED__ && document.getElementById("tnp_chat_btn")) return;
-window.__TNP_CHAT_LOADED__ = true;
-
+  if (window.__TNP_CHAT_LOADED__) return;
+  window.__TNP_CHAT_LOADED__ = true;
 
   // ===== CONFIG =====
   var WHATSAPP_NUMBER = "5521986563334";
@@ -14,7 +13,7 @@ window.__TNP_CHAT_LOADED__ = true;
   var SUBTITLE = "Atendimento rápido";
 
   var WELCOME_1 = "Olá, seja bem-vindo(a) a Tô na Praia";
-  var WELCOME_2 = "Escolha uma opção para eu te ajudar:";
+  var WELCOME_2 = "Sobre o que você quer falar?";
 
   var ICON_URL = "https://melins-44.github.io/tnp-chat/icorobo.png";
   var TIP_TEXT = "Tire suas dúvidas aqui";
@@ -25,18 +24,11 @@ window.__TNP_CHAT_LOADED__ = true;
   var TNP_BTN_TEXT = "#065F46";     // verde escuro
   var TNP_LINK = "#0F766E";         // detalhe (se precisar)
 
-  // ===== MENUS =====
-  // Menu principal
-  var MENU_MAIN = [
-    { n: "1", label: "1 - Quem somos", text: "Quem somos", action: "who" },
-    { n: "2", label: "2 - Como comprar", text: "Como comprar", action: "how" },
-    { n: "3", label: "3 - Fale conosco ↗", text: "Fale conosco", action: "whatsapp" }
-  ];
-
-  // Botões finais nas opções 1 e 2
-  var ACTION_FOOTER = [
-    { label: "Voltar ao Menu", text: "Voltar ao Menu", action: "back_menu" },
-    { label: "Falar no WhatsApp ↗", text: "Falar no WhatsApp", action: "whatsapp" }
+  // Botões principais (estilo SendPulse: dentro da conversa)
+  var QUICK = [
+    { n: "1", label: "1 - Como eu compro?", text: "Como eu compro?" },
+    { n: "2", label: "2 - Política Troca", text: "Quero saber sobre política de troca." },
+    { n: "3", label: "3 - Conversar ↗", text: "Quero falar com alguém no WhatsApp.", action: "whatsapp" }
   ];
 
   // ===== HELPERS =====
@@ -179,7 +171,7 @@ window.__TNP_CHAT_LOADED__ = true;
 
       var input = el("input");
       input.type = "text";
-      input.placeholder = "Digite 1, 2 ou 3…";
+      input.placeholder = "Enviar uma mensagem… (ou digite 1, 2, 3)";
       css(input,
         "flex:1;border:1px solid #E5E7EB;border-radius:12px;" +
         "padding:10px;font-size:13px;outline:none;"
@@ -219,8 +211,7 @@ window.__TNP_CHAT_LOADED__ = true;
 
       // ===== Chat UI helpers =====
       var log = [];
-      var journey = [];      // guarda o caminho (opções escolhidas)
-      var lastMenu = null;   // para voltar ao menu atual quando der erro
+      var lastMenu = null;
 
       function addBubble(msg, who) {
         var row = el("div");
@@ -278,11 +269,14 @@ window.__TNP_CHAT_LOADED__ = true;
             qb.onclick = function () {
               try { block.remove(); } catch (_) {}
 
-              // Registra o que o cliente clicou
-              user(it.text);
+              if (it.action === "whatsapp") {
+                addBubble("Quero conversar no WhatsApp.", "user");
+                openWpp("Quero conversar no WhatsApp.");
+                return;
+              }
 
-              // Ação do botão
-              handleAction(it.action, it.text);
+              addBubble(it.text, "user");
+              botReply(it.text);
             };
 
             safeAppend(block, qb);
@@ -297,27 +291,19 @@ window.__TNP_CHAT_LOADED__ = true;
       function user(m) { addBubble(m, "user"); log.push("Cliente: " + m); }
 
       function invalidOption() {
-        bot("Desculpe, não consegui entender 😕\nPor favor, escolha uma das opções abaixo.");
-        if (lastMenu) setTimeout(function () { addQuickButtons(lastMenu); }, 220);
+        bot("Desculpe, não consegui entender 😕\nPor favor, tente novamente.");
+        if (lastMenu) {
+          setTimeout(function () { addQuickButtons(lastMenu); }, 220);
+        }
       }
 
-      function buildWppSummary(extraTag) {
-        // Resumo amigável do caminho
-        var path = journey.length ? journey.join(" > ") : "Menu inicial";
-        var msg =
-          "Oi! Passei pelo chatbot da Tô na Praia 😊\n" +
-          "Eu naveguei por: " + path + ".\n";
+      function openWpp(extra) {
+        var last = log.slice(-14).join("\n");
+        var base = "Oi! Vim do microsite.\n\n" + last;
+        if (extra) base += "\nCliente: " + extra;
+        base += "\n\nQuero continuar por aqui no WhatsApp 🙂";
 
-        if (extraTag) msg += "Quero conversar mais com vocês sobre: " + extraTag + ".\n";
-
-        msg += "\nPodem me ajudar?";
-
-        return msg;
-      }
-
-      function openWpp(extraTag) {
-        var text = buildWppSummary(extraTag);
-        var url = "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(text);
+        var url = "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(base);
         window.open(url, "_blank");
       }
 
@@ -325,15 +311,120 @@ window.__TNP_CHAT_LOADED__ = true;
         var t = (raw || "").trim();
         if (!t) return "";
 
-        // captura "1", "2", "3" ou "1 - bla"
-        var m = t.match(/^\s*([1-3])\b/);
-        if (m && m[1]) return m[1];
+        // aceita digitar 1/2/3 para o menu atual (quando for o menu principal)
+        if (t === "1") return "Como eu compro?";
+        if (t === "2") return "Quero saber sobre política de troca.";
+        if (t === "3") return "Quero falar com alguém no WhatsApp.";
 
-        // se o cara digitar por extenso
-        var low = t.toLowerCase();
-        if (low.indexOf("quem") >= 0) return "1";
-        if (low.indexOf("compr") >= 0) return "2";
-        if (low.indexOf("fale") >= 0 || low.indexOf("contato
+        var m = t.match(/^\s*([1-3])\b/);
+        if (m && m[1]) return normalizeUserText(m[1]);
+
+        return t;
+      }
+
+      function botReply(userText) {
+        var t = (userText || "").toLowerCase();
+
+        setTimeout(function () {
+          if (t.indexOf("compr") >= 0) {
+            bot("Perfeito 😊\nVocê quer comprar para você ou para presente?");
+            addQuickButtons([
+              { label: "Para mim", text: "Quero comprar para mim." },
+              { label: "Para presente", text: "Quero comprar para presentear." }
+            ]);
+          } else if (t.indexOf("troca") >= 0 || t.indexOf("política") >= 0) {
+            bot("A troca é avaliada caso a caso.\nMe diz o que aconteceu e em quanto tempo foi a compra?");
+          } else if (t.indexOf("presente") >= 0) {
+            bot("Boa! 😄\nPra quem é o presente e qual faixa de valor você quer gastar?");
+          } else if (t.indexOf("whats") >= 0 || t.indexOf("convers") >= 0) {
+            openWpp("Quero falar com alguém no WhatsApp.");
+          } else {
+            bot("Entendi!\nSe quiser, eu te levo pro WhatsApp com essa mensagem pronta ✅");
+            addQuickButtons([{ label: "Conversar no WhatsApp ↗", text: "Quero falar no WhatsApp.", action: "whatsapp" }]);
+          }
+        }, 280);
+      }
+
+      // ===== Events =====
+      function openChat() {
+        box.style.display = "flex";
+        btn.classList.remove("tnp-pulse");
+        body.innerHTML = "";
+        log = [];
+        lastMenu = null;
+
+        bot(WELCOME_1);
+        bot(WELCOME_2);
+        addQuickButtons(QUICK);
+
+        layoutChat();
+      }
+
+      function closeChat() {
+        box.style.display = "none";
+        btn.classList.add("tnp-pulse");
+      }
+
+      btn.onclick = function () {
+        var visible = box.style.display === "flex";
+        if (visible) closeChat();
+        else openChat();
+      };
+
+      close.onclick = closeChat;
+
+      send.onclick = function () {
+        var raw = (input.value || "").trim();
+        if (!raw) return;
+        input.value = "";
+
+        user(raw);
+
+        var normalized = normalizeUserText(raw);
+
+        // se o menu está ativo e o texto não bateu com número/intenções básicas, mostra erro + volta menu
+        var looksLikeMenuPick = /^[1-3]\b/.test(raw.trim());
+        if (!looksLikeMenuPick && lastMenu) {
+          // tenta reconhecer palavras simples do menu principal também
+          var low = raw.toLowerCase();
+          var ok =
+            low.indexOf("compr") >= 0 ||
+            low.indexOf("troca") >= 0 ||
+            low.indexOf("polit") >= 0 ||
+            low.indexOf("convers") >= 0 ||
+            low.indexOf("whats") >= 0;
+
+          if (!ok) {
+            invalidOption();
+            return;
+          }
+        }
+
+        // se digitou 3 -> whatsapp
+        if (normalized.toLowerCase().indexOf("whatsapp") >= 0) {
+          openWpp("Quero falar com alguém no WhatsApp.");
+          return;
+        }
+
+        botReply(normalized);
+      };
+
+      input.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") send.click();
+      });
+
+    } catch (e) {
+      try { console.error("TNP chat error:", e); } catch (_) {}
+    }
+  }
+
+  function waitForBody() {
+    if (document.body) return start();
+    setTimeout(waitForBody, 50);
+  }
+
+  waitForBody();
+})();
 
 
 
