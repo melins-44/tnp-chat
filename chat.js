@@ -1,15 +1,14 @@
 
 (function () {
   // =============================
-  //  Tô na Praia - Chat Widget (SendPulse-like)
+  //  Tô na Praia - Chat Widget
   //  WhatsApp: 5521986563334
   // =============================
 
+  // Recarrega se não existir o botão (evita "sumir" em SPA)
   if (window.__TNP_CHAT_LOADED__ && document.getElementById("tnp_chat_btn")) return;
-window.__TNP_CHAT_LOADED__ = true;
+  window.__TNP_CHAT_LOADED__ = true;
 
-
-  // ===== CONFIG =====
   var WHATSAPP_NUMBER = "5521986563334";
   var BRAND_NAME = "Tô na Praia";
   var SUBTITLE = "Atendimento rápido";
@@ -20,27 +19,21 @@ window.__TNP_CHAT_LOADED__ = true;
   var ICON_URL = "https://melins-44.github.io/tnp-chat/icorobo.png";
   var TIP_TEXT = "Tire suas dúvidas aqui";
 
-  // ===== CORES (Tô na Praia - verde clarinho) =====
-  var TNP_BTN_BG = "#DFF5EA";       // verde claro
-  var TNP_BTN_BG_HOVER = "#C7EBDD"; // hover
-  var TNP_BTN_TEXT = "#065F46";     // verde escuro
-  var TNP_LINK = "#0F766E";         // detalhe (se precisar)
+  var TNP_BTN_BG = "#DFF5EA";
+  var TNP_BTN_BG_HOVER = "#C7EBDD";
+  var TNP_BTN_TEXT = "#065F46";
 
-  // ===== MENUS =====
-  // Menu principal
   var MENU_MAIN = [
-    { n: "1", label: "1 - Quem somos", text: "Quem somos", action: "who" },
-    { n: "2", label: "2 - Como comprar", text: "Como comprar", action: "how" },
-    { n: "3", label: "3 - Fale conosco ↗", text: "Fale conosco", action: "whatsapp" }
+    { label: "1 - Quem somos", action: "who" },
+    { label: "2 - Como comprar", action: "how" },
+    { label: "3 - Fale conosco", action: "whatsapp" }
   ];
 
-  // Botões finais nas opções 1 e 2
   var ACTION_FOOTER = [
-    { label: "Voltar ao Menu", text: "Voltar ao Menu", action: "back_menu" },
-    { label: "Falar no WhatsApp ↗", text: "Falar no WhatsApp", action: "whatsapp" }
+    { label: "Voltar ao Menu", action: "back_menu" },
+    { label: "Falar no WhatsApp", action: "whatsapp" }
   ];
 
-  // ===== HELPERS =====
   function el(tag) { return document.createElement(tag); }
   function css(node, rules) { node.style.cssText = rules; return node; }
   function setText(node, t) { node.textContent = t; return node; }
@@ -56,48 +49,57 @@ window.__TNP_CHAT_LOADED__ = true;
     return Math.round(window.innerWidth || document.documentElement.clientWidth || 400);
   }
 
+  function textWhoWeAre() {
+    return (
+      "A Tô na Praia é uma marca criada pela Tati com um propósito simples: levar a energia do mar para o seu dia a dia.\n\n" +
+      "A gente trabalha com peças escolhidas com carinho (bijus e acessórios com vibe praiana), pensando em:\n" +
+      "- leveza e estilo\n" +
+      "- bom gosto para usar ou presentear\n" +
+      "- atendimento humano e próximo\n\n" +
+      "Se quiser, eu te levo para conversar no WhatsApp e te ajudar a escolher."
+    );
+  }
+
+  function textHowToBuy() {
+    return (
+      "Você pode comprar de um jeito bem fácil:\n\n" +
+      "1) Baixar o nosso catálogo para conhecer as peças e nos chamar no WhatsApp.\n\n" +
+      "2) Ou, de forma mais prática, clicar nos produtos desejados, montar seu carrinho de compras e encerrar a compra diretamente com a gente, no WhatsApp.\n\n" +
+      "Se quiser, eu já te levo para o WhatsApp com uma mensagem pronta."
+    );
+  }
+
   function start() {
     try {
-      if (document.getElementById("tnp_chat_btn")) return;
+      // Se já existe botão de uma execução antiga, remove pra recriar limpo
+      var oldBtn = document.getElementById("tnp_chat_btn");
+      var oldBox = document.getElementById("tnp_chat_box");
+      var oldWrap = document.getElementById("tnp_chat_wrap");
+      if (oldBtn && oldBtn.parentNode) oldBtn.parentNode.removeChild(oldBtn);
+      if (oldBox && oldBox.parentNode) oldBox.parentNode.removeChild(oldBox);
+      if (oldWrap && oldWrap.parentNode) oldWrap.parentNode.removeChild(oldWrap);
 
-      // ---- CSS base ----
+      // CSS
       var style = el("style");
-      style.textContent = `
-        @keyframes tnpPulse {
-          0% { transform: scale(1); }
-          50% { transform: scale(1.06); }
-          100% { transform: scale(1); }
-        }
-        .tnp-pulse { animation: tnpPulse 2.4s ease-in-out infinite; }
-        .tnp-pulse:hover { animation-play-state: paused; }
-
-        /* compacta em telas baixas (paisagem) */
-        .tnp-compact #tnp_chat_footer { padding: 8px 10px !important; gap: 6px !important; }
-        .tnp-compact #tnp_chat_footer input { padding: 8px !important; font-size: 12px !important; }
-        .tnp-compact #tnp_chat_footer button { padding: 8px 10px !important; font-size: 12px !important; }
-      `;
+      style.textContent =
+        "@keyframes tnpPulse{0%{transform:scale(1)}50%{transform:scale(1.06)}100%{transform:scale(1)}}" +
+        ".tnp-pulse{animation:tnpPulse 2.4s ease-in-out infinite}" +
+        ".tnp-pulse:hover{animation-play-state:paused}" +
+        ".tnp-compact #tnp_chat_footer{padding:8px 10px!important;gap:6px!important}" +
+        ".tnp-compact #tnp_chat_footer input{padding:8px!important;font-size:12px!important}" +
+        ".tnp-compact #tnp_chat_footer button{padding:8px 10px!important;font-size:12px!important}";
       safeHeadAppend(style);
 
-      // -------- Floating CTA (label + button) --------
+      // Wrap
       var wrap = el("div");
       wrap.id = "tnp_chat_wrap";
-      css(wrap,
-        "position:fixed;right:18px;bottom:18px;z-index:999999;" +
-        "display:flex;flex-direction:column;align-items:flex-end;gap:8px;"
-      );
+      css(wrap, "position:fixed;right:18px;bottom:18px;z-index:999999;display:flex;flex-direction:column;align-items:flex-end;gap:8px;");
       safeAppend(document.body, wrap);
 
       var tip = el("div");
       tip.id = "tnp_chat_tip";
       setText(tip, TIP_TEXT);
-      css(tip,
-        "background:rgba(17,24,39,.92);color:#fff;" +
-        "padding:6px 10px;border-radius:12px;" +
-        "font:12px Arial;letter-spacing:.2px;" +
-        "box-shadow:0 10px 30px rgba(0,0,0,.18);" +
-        "backdrop-filter:saturate(140%) blur(6px);" +
-        "user-select:none;"
-      );
+      css(tip, "background:rgba(17,24,39,.92);color:#fff;padding:6px 10px;border-radius:12px;font:12px Arial;box-shadow:0 10px 30px rgba(0,0,0,.18);user-select:none;");
       safeAppend(wrap, tip);
 
       var btn = el("button");
@@ -105,38 +107,19 @@ window.__TNP_CHAT_LOADED__ = true;
       btn.id = "tnp_chat_btn";
       btn.className = "tnp-pulse";
       btn.setAttribute("aria-label", "Abrir chat");
-      css(btn,
-        "width:56px;height:56px;border:none;background:transparent;" +
-        "cursor:pointer;display:flex;align-items:center;justify-content:center;" +
-        "padding:0;"
-      );
-      btn.innerHTML =
-        '<img src="' + ICON_URL + '" alt="Chat" ' +
-        'style="width:60px;height:60px;object-fit:contain;display:block;' +
-        'filter:drop-shadow(0 10px 24px rgba(0,0,0,.25));" />';
-
+      css(btn, "width:56px;height:56px;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;");
+      btn.innerHTML = '<img src="' + ICON_URL + '" alt="Chat" style="width:60px;height:60px;object-fit:contain;display:block;filter:drop-shadow(0 10px 24px rgba(0,0,0,.25));" />';
       safeAppend(wrap, btn);
 
-      // -------- Box (flex container) --------
+      // Box
       var box = el("div");
       box.id = "tnp_chat_box";
-      css(box,
-        "position:fixed;right:18px;z-index:999999;" +
-        "width:340px;max-width:calc(100vw - 36px);" +
-        "border-radius:18px;overflow:hidden;" +
-        "box-shadow:0 14px 40px rgba(0,0,0,.25);" +
-        "background:#fff;font-family:Arial,sans-serif;" +
-        "display:none;flex-direction:column;"
-      );
+      css(box, "position:fixed;right:18px;z-index:999999;width:340px;max-width:calc(100vw - 36px);border-radius:18px;overflow:hidden;box-shadow:0 14px 40px rgba(0,0,0,.25);background:#fff;font-family:Arial,sans-serif;display:none;flex-direction:column;");
       safeAppend(document.body, box);
 
-      // -------- Header --------
+      // Header
       var header = el("div");
-      css(header,
-        "padding:12px 14px;background:#111827;color:#fff;" +
-        "display:flex;align-items:center;justify-content:space-between;" +
-        "flex:0 0 auto;"
-      );
+      css(header, "padding:12px 14px;background:#111827;color:#fff;display:flex;align-items:center;justify-content:space-between;flex:0 0 auto;");
       safeAppend(box, header);
 
       var hLeft = el("div");
@@ -154,59 +137,42 @@ window.__TNP_CHAT_LOADED__ = true;
 
       var close = el("button");
       close.type = "button";
-      setText(close, "✕");
+      setText(close, "X");
       css(close, "background:transparent;border:none;color:#fff;font-size:18px;cursor:pointer;");
       safeAppend(header, close);
 
-      // -------- Body --------
+      // Body
       var body = el("div");
       body.id = "tnp_chat_body";
-      css(body,
-        "padding:12px;background:#F3F4F6;" +
-        "overflow:auto;font-size:13px;" +
-        "flex:1 1 auto;min-height:0;"
-      );
+      css(body, "padding:12px;background:#F3F4F6;overflow:auto;font-size:13px;flex:1 1 auto;min-height:0;");
       safeAppend(box, body);
 
-      // -------- Footer (input fixo) --------
+      // Footer
       var footer = el("div");
       footer.id = "tnp_chat_footer";
-      css(footer,
-        "padding:10px 12px;background:#fff;border-top:1px solid #E5E7EB;" +
-        "display:flex;gap:8px;align-items:center;" +
-        "flex:0 0 auto;"
-      );
+      css(footer, "padding:10px 12px;background:#fff;border-top:1px solid #E5E7EB;display:flex;gap:8px;align-items:center;flex:0 0 auto;");
       safeAppend(box, footer);
 
       var input = el("input");
       input.type = "text";
       input.placeholder = "Digite 1, 2 ou 3…";
-      css(input,
-        "flex:1;border:1px solid #E5E7EB;border-radius:12px;" +
-        "padding:10px;font-size:13px;outline:none;"
-      );
+      css(input, "flex:1;border:1px solid #E5E7EB;border-radius:12px;padding:10px;font-size:13px;outline:none;");
       safeAppend(footer, input);
 
       var send = el("button");
       send.type = "button";
       setText(send, "Enviar");
-      css(send,
-        "border:none;border-radius:12px;padding:10px 14px;" +
-        "background:#111827;color:#fff;font-size:13px;cursor:pointer;"
-      );
+      css(send, "border:none;border-radius:12px;padding:10px 14px;background:#111827;color:#fff;font-size:13px;cursor:pointer;");
       safeAppend(footer, send);
 
-      // ===== Layout (sem cortar em paisagem) =====
       function layoutChat() {
         var vh = getVH();
         var vw = getVW();
-
         if (vh < 420 || vw > vh) box.classList.add("tnp-compact");
         else box.classList.remove("tnp-compact");
 
         var wrapH = (wrap && wrap.offsetHeight) ? wrap.offsetHeight : 80;
         var bottomOffset = 18 + wrapH + 10;
-
         box.style.top = "10px";
         box.style.bottom = bottomOffset + "px";
       }
@@ -218,123 +184,159 @@ window.__TNP_CHAT_LOADED__ = true;
         window.visualViewport.addEventListener("scroll", layoutChat);
       }
 
-      // ===== Chat UI helpers =====
-      var log = [];
-      var journey = [];      // guarda o caminho (opções escolhidas)
-      var lastMenu = null;   // para voltar ao menu atual quando der erro
+      var journey = [];
+      var lastMenu = null;
 
       function addBubble(msg, who) {
         var row = el("div");
-        css(row,
-          "margin:8px 0;display:flex;justify-content:" +
-          (who === "user" ? "flex-end" : "flex-start") + ";"
-        );
-
+        css(row, "margin:8px 0;display:flex;justify-content:" + (who === "user" ? "flex-end" : "flex-start") + ";");
         var b = el("div");
         css(b,
-          "max-width:86%;padding:10px 12px;border-radius:14px;" +
-          "box-shadow:0 6px 16px rgba(0,0,0,.08);" +
-          "white-space:pre-line;" +
-          (who === "user"
-            ? "background:#2563EB;color:#fff;border-top-right-radius:6px;"
-            : "background:#fff;color:#111827;border-top-left-radius:6px;")
+          "max-width:86%;padding:10px 12px;border-radius:14px;box-shadow:0 6px 16px rgba(0,0,0,.08);white-space:pre-line;" +
+          (who === "user" ? "background:#2563EB;color:#fff;border-top-right-radius:6px;" : "background:#fff;color:#111827;border-top-left-radius:6px;")
         );
         setText(b, msg);
-
         safeAppend(row, b);
         safeAppend(body, row);
         body.scrollTop = body.scrollHeight;
       }
 
-      function addQuickButtons(items) {
+      function bot(m) { addBubble(m, "bot"); }
+      function user(m) { addBubble(m, "user"); }
+
+      function addButtons(items) {
         lastMenu = items;
-
         var block = el("div");
-        css(block,
-          "margin:8px 0;display:flex;flex-direction:column;gap:10px;" +
-          "align-items:stretch;"
-        );
-
+        css(block, "margin:8px 0;display:flex;flex-direction:column;gap:10px;align-items:stretch;");
         for (var i = 0; i < items.length; i++) {
           (function (it) {
             var qb = el("button");
             qb.type = "button";
             setText(qb, it.label);
-
             css(qb,
-              "width:100%;text-align:center;" +
-              "border:1px solid rgba(6,95,70,.15);" +
-              "background:" + TNP_BTN_BG + ";" +
-              "color:" + TNP_BTN_TEXT + ";" +
-              "border-radius:14px;" +
-              "padding:12px 14px;" +
-              "font-weight:700;font-size:13px;cursor:pointer;" +
-              "box-shadow:0 6px 14px rgba(0,0,0,.06);" +
-              "transition:all .18s ease;"
+              "width:100%;text-align:center;border:1px solid rgba(6,95,70,.15);" +
+              "background:" + TNP_BTN_BG + ";color:" + TNP_BTN_TEXT + ";" +
+              "border-radius:14px;padding:12px 14px;font-weight:700;font-size:13px;cursor:pointer;" +
+              "box-shadow:0 6px 14px rgba(0,0,0,.06);transition:all .18s ease;"
             );
-
             qb.onmouseenter = function () { qb.style.background = TNP_BTN_BG_HOVER; };
             qb.onmouseleave = function () { qb.style.background = TNP_BTN_BG; };
-
             qb.onclick = function () {
               try { block.remove(); } catch (_) {}
-
-              // Registra o que o cliente clicou
-              user(it.text);
-
-              // Ação do botão
-              handleAction(it.action, it.text);
+              user(it.label);
+              handleAction(it.action);
             };
-
             safeAppend(block, qb);
           })(items[i]);
         }
-
         safeAppend(body, block);
         body.scrollTop = body.scrollHeight;
       }
 
-      function bot(m) { addBubble(m, "bot"); log.push("Bot: " + m); }
-      function user(m) { addBubble(m, "user"); log.push("Cliente: " + m); }
-
       function invalidOption() {
-        bot("Desculpe, não consegui entender 😕\nPor favor, escolha uma das opções abaixo.");
-        if (lastMenu) setTimeout(function () { addQuickButtons(lastMenu); }, 220);
+        bot("Desculpe, não consegui entender. Por favor, escolha uma opção abaixo.");
+        if (lastMenu) setTimeout(function () { addButtons(lastMenu); }, 200);
       }
 
-      function buildWppSummary(extraTag) {
-        // Resumo amigável do caminho
+      function openWpp(tag) {
         var path = journey.length ? journey.join(" > ") : "Menu inicial";
-        var msg =
-          "Oi! Passei pelo chatbot da Tô na Praia 😊\n" +
-          "Eu naveguei por: " + path + ".\n";
-
-        if (extraTag) msg += "Quero conversar mais com vocês sobre: " + extraTag + ".\n";
-
-        msg += "\nPodem me ajudar?";
-
-        return msg;
+        var text = "Oi! Passei pelo chatbot da Tô na Praia.\nEu naveguei por: " + path + ".\n";
+        if (tag) text += "Quero conversar mais sobre: " + tag + ".\n";
+        text += "\nPodem me ajudar?";
+        window.open("https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(text), "_blank");
       }
 
-      function openWpp(extraTag) {
-        var text = buildWppSummary(extraTag);
-        var url = "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(text);
-        window.open(url, "_blank");
+      function handleAction(action) {
+        if (action === "who") {
+          journey.push("Quem somos");
+          bot(textWhoWeAre());
+          addButtons(ACTION_FOOTER);
+          return;
+        }
+        if (action === "how") {
+          journey.push("Como comprar");
+          bot(textHowToBuy());
+          addButtons(ACTION_FOOTER);
+          return;
+        }
+        if (action === "back_menu") {
+          bot("Beleza! Escolha uma opção:");
+          addButtons(MENU_MAIN);
+          return;
+        }
+        if (action === "whatsapp") {
+          journey.push("Fale conosco");
+          openWpp("atendimento");
+          return;
+        }
+        invalidOption();
       }
 
-      function normalizeUserText(raw) {
+      function handleText(raw) {
         var t = (raw || "").trim();
-        if (!t) return "";
+        if (t === "1") return handleAction("who");
+        if (t === "2") return handleAction("how");
+        if (t === "3") return handleAction("whatsapp");
 
-        // captura "1", "2", "3" ou "1 - bla"
-        var m = t.match(/^\s*([1-3])\b/);
-        if (m && m[1]) return m[1];
-
-        // se o cara digitar por extenso
+        // palavras-chave simples
         var low = t.toLowerCase();
-        if (low.indexOf("quem") >= 0) return "1";
-        if (low.indexOf("compr") >= 0) return "2";
-        if (low.indexOf("fale") >= 0 || low.indexOf("contato
+        if (low.indexOf("quem") >= 0) return handleAction("who");
+        if (low.indexOf("compr") >= 0) return handleAction("how");
+        if (low.indexOf("cont") >= 0 || low.indexOf("whats") >= 0 || low.indexOf("fale") >= 0) return handleAction("whatsapp");
+
+        invalidOption();
+      }
+
+      function openChat() {
+        box.style.display = "flex";
+        body.innerHTML = "";
+        journey = [];
+        lastMenu = null;
+
+        bot(WELCOME_1);
+        bot(WELCOME_2);
+        addButtons(MENU_MAIN);
+        layoutChat();
+      }
+
+      function closeChat() { box.style.display = "none"; }
+
+      btn.onclick = function () {
+        var visible = box.style.display === "flex";
+        if (visible) closeChat();
+        else openChat();
+      };
+
+      close.onclick = closeChat;
+
+      send.onclick = function () {
+        var raw = (input.value || "").trim();
+        if (!raw) return;
+        input.value = "";
+        user(raw);
+        handleText(raw);
+      };
+
+      input.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") send.click();
+      });
+
+      // Debug (você pode tirar depois)
+      try { console.log("[TNP Chat] carregado OK"); } catch (_) {}
+
+    } catch (e) {
+      try { console.error("TNP chat error:", e); } catch (_) {}
+    }
+  }
+
+  function waitForBody() {
+    if (document.body) return start();
+    setTimeout(waitForBody, 50);
+  }
+
+  waitForBody();
+})();
+
 
 
 
