@@ -687,6 +687,138 @@
           border-radius: 22px;
         }
 
+      @media (max-width: 900px) and (orientation: landscape) {
+          #oraculo-7nos-root {
+    right: 10px;
+    bottom: 10px;
+  }
+
+  .oraculo-7nos-toggle {
+    width: 68px;
+    height: 68px;
+  }
+
+  .oraculo-7nos-bubble {
+    bottom: 82px;
+    max-width: 220px;
+    font-size: 12px;
+    padding: 10px 12px;
+  }
+
+  .oraculo-7nos-panel {
+    position: fixed !important;
+    left: 10px !important;
+    right: 10px !important;
+    top: 10px !important;
+    bottom: 88px !important;
+    width: auto !important;
+    max-width: none !important;
+    max-height: none !important;
+    border-radius: 18px;
+  }
+
+  .oraculo-7nos-header {
+    padding: 12px 14px 10px;
+  }
+
+  .oraculo-7nos-title-icon {
+    width: 38px;
+    height: 38px;
+  }
+
+  .oraculo-7nos-title {
+    font-size: 17px;
+  }
+
+  .oraculo-7nos-subtitle {
+    font-size: 11px;
+    line-height: 1.35;
+  }
+
+  .oraculo-7nos-close {
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+  }
+
+  .oraculo-7nos-body {
+    padding: 12px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .oraculo-7nos-label {
+    font-size: 12px;
+    margin-bottom: 6px;
+  }
+
+  .oraculo-7nos-input {
+    padding: 12px 13px;
+    font-size: 14px;
+    margin-bottom: 12px;
+    border-radius: 12px;
+  }
+
+  .oraculo-7nos-cats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .oraculo-7nos-cat {
+    min-height: 42px;
+    padding: 10px 8px;
+    font-size: 13px;
+    border-radius: 12px;
+  }
+
+  .oraculo-7nos-primary {
+    padding: 13px 14px;
+    font-size: 14px;
+    border-radius: 13px;
+  }
+
+  .oraculo-7nos-error {
+    margin-top: 10px;
+    padding: 10px 11px;
+    font-size: 12px;
+  }
+
+  .oraculo-7nos-result {
+    margin-top: 12px;
+    padding: 12px;
+    border-radius: 14px;
+  }
+
+  .oraculo-7nos-result h4 {
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+
+  .oraculo-7nos-result p {
+    font-size: 13px;
+    line-height: 1.55;
+  }
+
+  .oraculo-7nos-actions {
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .oraculo-7nos-secondary,
+  .oraculo-7nos-wa {
+    font-size: 13px;
+    padding: 11px 10px;
+    border-radius: 12px;
+  }
+
+  .oraculo-7nos-footer {
+    font-size: 10px;
+    margin-top: 8px;
+  }
+}
+
+
         .oraculo-7nos-bubble {
           max-width: 220px;
           bottom: 104px;
