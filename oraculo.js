@@ -499,11 +499,169 @@
         line-height: 1.4;
       }
 
-      @media (max-width: 640px) {
-        #oraculo-7nos-root {
-          right: 12px;
-          bottom: 12px;
-        }
+     @media (max-width: 640px) {
+  #oraculo-7nos-root {
+    right: 12px;
+    bottom: 12px;
+  }
+
+  .oraculo-7nos-toggle {
+    width: 88px;
+    height: 88px;
+  }
+
+  .oraculo-7nos-toggle img {
+    width: 90%;
+    height: 90%;
+  }
+
+  .oraculo-7nos-bubble {
+    right: 0;
+    bottom: 108px;
+    max-width: 250px;
+    white-space: normal;
+    font-size: 13px;
+    line-height: 1.4;
+    padding: 12px 14px;
+  }
+
+  .oraculo-7nos-panel {
+    position: fixed;
+    left: 12px;
+    right: 12px;
+    bottom: 108px;
+    width: auto;
+    max-width: none;
+    max-height: 84vh;
+    border-radius: 24px;
+  }
+
+  .oraculo-7nos-header {
+    padding: 18px 16px 14px;
+  }
+
+  .oraculo-7nos-title-wrap {
+    gap: 12px;
+  }
+
+  .oraculo-7nos-title-icon {
+    width: 50px;
+    height: 50px;
+  }
+
+  .oraculo-7nos-title {
+    font-size: 20px;
+    line-height: 1.2;
+  }
+
+  .oraculo-7nos-subtitle {
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  .oraculo-7nos-close {
+    width: 38px;
+    height: 38px;
+    font-size: 20px;
+  }
+
+  .oraculo-7nos-body {
+    padding: 16px;
+  }
+
+  .oraculo-7nos-label {
+    font-size: 14px;
+    margin-bottom: 9px;
+  }
+
+  .oraculo-7nos-input {
+    font-size: 16px;
+    padding: 16px 15px;
+    border-radius: 16px;
+    margin-bottom: 16px;
+  }
+
+  .oraculo-7nos-cats {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .oraculo-7nos-cat {
+    min-height: 50px;
+    padding: 14px 10px;
+    font-size: 15px;
+    border-radius: 16px;
+  }
+
+  .oraculo-7nos-primary {
+    padding: 17px 16px;
+    font-size: 17px;
+    border-radius: 16px;
+  }
+
+  .oraculo-7nos-result {
+    padding: 16px;
+    border-radius: 18px;
+  }
+
+  .oraculo-7nos-result h4 {
+    font-size: 17px;
+    margin-bottom: 10px;
+  }
+
+  .oraculo-7nos-result p {
+    font-size: 15px;
+    line-height: 1.75;
+  }
+
+  .oraculo-7nos-actions {
+    gap: 10px;
+  }
+
+  .oraculo-7nos-secondary,
+  .oraculo-7nos-wa {
+    font-size: 15px;
+    padding: 14px 12px;
+    border-radius: 15px;
+  }
+
+  .oraculo-7nos-footer {
+    font-size: 12px;
+    margin-top: 12px;
+  }
+}
+
+@media (max-width: 420px) {
+  .oraculo-7nos-panel {
+    left: 10px;
+    right: 10px;
+    bottom: 102px;
+    max-height: 85vh;
+    border-radius: 22px;
+  }
+
+  .oraculo-7nos-bubble {
+    max-width: 220px;
+    bottom: 104px;
+  }
+
+  .oraculo-7nos-title {
+    font-size: 19px;
+  }
+
+  .oraculo-7nos-subtitle {
+    font-size: 12px;
+  }
+
+  .oraculo-7nos-cat {
+    font-size: 14px;
+  }
+
+  .oraculo-7nos-primary {
+    font-size: 16px;
+  }
+}
 
         .oraculo-7nos-toggle {
           width: 84px;
