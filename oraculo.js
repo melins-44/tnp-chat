@@ -5,7 +5,7 @@
   window.__ORACULO_7_NOS_WIDGET__ = true;
 
   const WHATSAPP_NUMBER = "5521986563334";
-  const VERSION = "6.0.0";
+  const VERSION = "8.0.0";
   const ORACULO_ICON_URL = "https://melins-44.github.io/tnp-chat/oraculo-mascote.png?v=1";
 
   const ORACULO_7_NOS = {
@@ -170,6 +170,13 @@
       "Quero saber mais sobre a pulseira.";
 
     return "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(texto);
+  }
+
+  function isCompactMobileView() {
+    const isTouch = window.matchMedia("(pointer: coarse)").matches;
+    const isSmallWidth = window.innerWidth <= 820;
+    const isSmallHeight = window.innerHeight <= 500;
+    return isTouch && (isSmallWidth || isSmallHeight);
   }
 
   function injectStyles() {
@@ -687,138 +694,6 @@
           border-radius: 22px;
         }
 
-      @media (max-width: 900px) and (orientation: landscape) {
-          #oraculo-7nos-root {
-    right: 10px;
-    bottom: 10px;
-  }
-
-  .oraculo-7nos-toggle {
-    width: 68px;
-    height: 68px;
-  }
-
-  .oraculo-7nos-bubble {
-    bottom: 82px;
-    max-width: 220px;
-    font-size: 12px;
-    padding: 10px 12px;
-  }
-
-  .oraculo-7nos-panel {
-    position: fixed !important;
-    left: 10px !important;
-    right: 10px !important;
-    top: 10px !important;
-    bottom: 88px !important;
-    width: auto !important;
-    max-width: none !important;
-    max-height: none !important;
-    border-radius: 18px;
-  }
-
-  .oraculo-7nos-header {
-    padding: 12px 14px 10px;
-  }
-
-  .oraculo-7nos-title-icon {
-    width: 38px;
-    height: 38px;
-  }
-
-  .oraculo-7nos-title {
-    font-size: 17px;
-  }
-
-  .oraculo-7nos-subtitle {
-    font-size: 11px;
-    line-height: 1.35;
-  }
-
-  .oraculo-7nos-close {
-    width: 32px;
-    height: 32px;
-    font-size: 18px;
-  }
-
-  .oraculo-7nos-body {
-    padding: 12px;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .oraculo-7nos-label {
-    font-size: 12px;
-    margin-bottom: 6px;
-  }
-
-  .oraculo-7nos-input {
-    padding: 12px 13px;
-    font-size: 14px;
-    margin-bottom: 12px;
-    border-radius: 12px;
-  }
-
-  .oraculo-7nos-cats {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 8px;
-    margin-bottom: 12px;
-  }
-
-  .oraculo-7nos-cat {
-    min-height: 42px;
-    padding: 10px 8px;
-    font-size: 13px;
-    border-radius: 12px;
-  }
-
-  .oraculo-7nos-primary {
-    padding: 13px 14px;
-    font-size: 14px;
-    border-radius: 13px;
-  }
-
-  .oraculo-7nos-error {
-    margin-top: 10px;
-    padding: 10px 11px;
-    font-size: 12px;
-  }
-
-  .oraculo-7nos-result {
-    margin-top: 12px;
-    padding: 12px;
-    border-radius: 14px;
-  }
-
-  .oraculo-7nos-result h4 {
-    font-size: 14px;
-    margin-bottom: 8px;
-  }
-
-  .oraculo-7nos-result p {
-    font-size: 13px;
-    line-height: 1.55;
-  }
-
-  .oraculo-7nos-actions {
-    gap: 8px;
-    margin-top: 10px;
-  }
-
-  .oraculo-7nos-secondary,
-  .oraculo-7nos-wa {
-    font-size: 13px;
-    padding: 11px 10px;
-    border-radius: 12px;
-  }
-
-  .oraculo-7nos-footer {
-    font-size: 10px;
-    margin-top: 8px;
-  }
-}
-
-
         .oraculo-7nos-bubble {
           max-width: 220px;
           bottom: 104px;
@@ -838,6 +713,144 @@
 
         .oraculo-7nos-primary {
           font-size: 16px;
+        }
+      }
+
+      @media (pointer: coarse) and (max-height: 500px) {
+        #oraculo-7nos-root {
+          right: 10px;
+          bottom: 10px;
+        }
+
+        .oraculo-7nos-toggle {
+          width: 64px;
+          height: 64px;
+        }
+
+        .oraculo-7nos-bubble {
+          bottom: 76px;
+          max-width: 200px;
+          font-size: 11px;
+          line-height: 1.3;
+          padding: 9px 11px;
+        }
+
+        .oraculo-7nos-panel {
+          position: fixed !important;
+          left: 8px !important;
+          right: 8px !important;
+          top: 8px !important;
+          bottom: 78px !important;
+          width: auto !important;
+          max-width: none !important;
+          max-height: none !important;
+          border-radius: 16px !important;
+        }
+
+        .oraculo-7nos-header {
+          padding: 10px 12px 8px;
+        }
+
+        .oraculo-7nos-title-wrap {
+          gap: 10px;
+        }
+
+        .oraculo-7nos-title-icon {
+          width: 34px;
+          height: 34px;
+        }
+
+        .oraculo-7nos-title {
+          font-size: 15px;
+          line-height: 1.15;
+        }
+
+        .oraculo-7nos-subtitle {
+          font-size: 10px;
+          line-height: 1.25;
+          margin-top: 2px;
+        }
+
+        .oraculo-7nos-close {
+          width: 30px;
+          height: 30px;
+          font-size: 16px;
+        }
+
+        .oraculo-7nos-body {
+          padding: 10px;
+          overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+
+        .oraculo-7nos-label {
+          font-size: 11px;
+          margin-bottom: 5px;
+        }
+
+        .oraculo-7nos-input {
+          padding: 10px 12px;
+          font-size: 13px;
+          margin-bottom: 10px;
+          border-radius: 10px;
+        }
+
+        .oraculo-7nos-cats {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 6px;
+          margin-bottom: 10px;
+        }
+
+        .oraculo-7nos-cat {
+          min-height: 36px;
+          padding: 8px 6px;
+          font-size: 12px;
+          border-radius: 10px;
+        }
+
+        .oraculo-7nos-primary {
+          padding: 11px 12px;
+          font-size: 13px;
+          border-radius: 11px;
+        }
+
+        .oraculo-7nos-error {
+          margin-top: 8px;
+          padding: 8px 10px;
+          font-size: 11px;
+        }
+
+        .oraculo-7nos-result {
+          margin-top: 10px;
+          padding: 10px;
+          border-radius: 12px;
+        }
+
+        .oraculo-7nos-result h4 {
+          font-size: 13px;
+          margin-bottom: 6px;
+        }
+
+        .oraculo-7nos-result p {
+          font-size: 12px;
+          line-height: 1.45;
+        }
+
+        .oraculo-7nos-actions {
+          gap: 6px;
+          margin-top: 8px;
+        }
+
+        .oraculo-7nos-secondary,
+        .oraculo-7nos-wa {
+          font-size: 12px;
+          padding: 9px 8px;
+          border-radius: 10px;
+        }
+
+        .oraculo-7nos-footer {
+          font-size: 9px;
+          margin-top: 6px;
         }
       }
     `;
@@ -970,8 +983,10 @@
       panel.setAttribute("aria-hidden", "false");
       bubble.classList.add("hidden");
 
-      if (window.innerWidth <= 640) {
+      if (isCompactMobileView()) {
         root.classList.add("oraculo-mobile-open");
+      } else {
+        root.classList.remove("oraculo-mobile-open");
       }
 
       setTimeout(function () {
@@ -1087,10 +1102,15 @@
     });
 
     window.addEventListener("resize", function () {
-      if (window.innerWidth > 640) {
+      if (!panel.classList.contains("open")) {
         root.classList.remove("oraculo-mobile-open");
-      } else if (panel.classList.contains("open")) {
+        return;
+      }
+
+      if (isCompactMobileView()) {
         root.classList.add("oraculo-mobile-open");
+      } else {
+        root.classList.remove("oraculo-mobile-open");
       }
     });
 
