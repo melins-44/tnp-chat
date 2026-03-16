@@ -5,8 +5,8 @@
   window.__ORACULO_7_NOS_WIDGET__ = true;
 
   const WHATSAPP_NUMBER = "5521986563334";
-  const VERSION = "3.0.0";
-  const ORACULO_ICON_URL = "https://melins-44.github.io/tnp-chat/oraculo-mascote.png";
+  const VERSION = "6.0.0";
+  const ORACULO_ICON_URL = "https://melins-44.github.io/tnp-chat/oraculo-mascote.png?v=1";
 
   const ORACULO_7_NOS = {
     protecao: [
@@ -108,7 +108,11 @@
   const ultimoIndicePorCategoria = {};
 
   function waitForBody(callback) {
-    if (document.body) return callback();
+    if (document.body) {
+      callback();
+      return;
+    }
+
     const timer = setInterval(function () {
       if (document.body) {
         clearInterval(timer);
@@ -126,7 +130,7 @@
     if (!Array.isArray(lista) || lista.length === 0) return -1;
     if (lista.length === 1) return 0;
 
-    let novoIndice;
+    let novoIndice = 0;
     let tentativas = 0;
 
     do {
@@ -180,6 +184,20 @@
         bottom: 18px;
         z-index: 999999;
         font-family: Arial, Helvetica, sans-serif;
+      }
+
+      #oraculo-7nos-root.oraculo-mobile-open {
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        pointer-events: none;
+      }
+
+      #oraculo-7nos-root.oraculo-mobile-open .oraculo-7nos-panel,
+      #oraculo-7nos-root.oraculo-mobile-open .oraculo-7nos-toggle,
+      #oraculo-7nos-root.oraculo-mobile-open .oraculo-7nos-bubble {
+        pointer-events: auto;
       }
 
       .oraculo-7nos-bubble {
@@ -237,12 +255,34 @@
         box-shadow: 0 18px 34px rgba(91, 42, 134, 0.42);
       }
 
+      .oraculo-7nos-toggle img,
+      .oraculo-7nos-title-icon img {
+        display: block;
+      }
+
       .oraculo-7nos-toggle img {
         width: 88%;
         height: 88%;
         object-fit: contain;
-        display: block;
         border-radius: 50%;
+      }
+
+      .oraculo-7nos-title-icon img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .oraculo-fallback-face {
+        width: 100%;
+        height: 100%;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        font-size: 28px;
+        line-height: 1;
+        background: radial-gradient(circle at center, #d9a7ff 0%, #a855f7 58%, #7b1fa2 100%);
       }
 
       .oraculo-7nos-panel {
@@ -304,13 +344,6 @@
         overflow: hidden;
       }
 
-      .oraculo-7nos-title-icon img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-      }
-
       .oraculo-7nos-title {
         margin: 0;
         font-size: 18px;
@@ -340,6 +373,7 @@
       .oraculo-7nos-body {
         padding: 15px;
         overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
       }
 
       .oraculo-7nos-label {
@@ -499,199 +533,163 @@
         line-height: 1.4;
       }
 
-     @media (max-width: 640px) {
-  #oraculo-7nos-root {
-    right: 12px;
-    bottom: 12px;
-  }
-
-  .oraculo-7nos-toggle {
-    width: 88px;
-    height: 88px;
-  }
-
-  .oraculo-7nos-toggle img {
-    width: 90%;
-    height: 90%;
-  }
-
-  .oraculo-7nos-bubble {
-    right: 0;
-    bottom: 108px;
-    max-width: 250px;
-    white-space: normal;
-    font-size: 13px;
-    line-height: 1.4;
-    padding: 12px 14px;
-  }
-
-  .oraculo-7nos-panel {
-    position: fixed;
-    left: 12px;
-    right: 12px;
-    bottom: 108px;
-    width: auto;
-    max-width: none;
-    max-height: 84vh;
-    border-radius: 24px;
-  }
-
-  .oraculo-7nos-header {
-    padding: 18px 16px 14px;
-  }
-
-  .oraculo-7nos-title-wrap {
-    gap: 12px;
-  }
-
-  .oraculo-7nos-title-icon {
-    width: 50px;
-    height: 50px;
-  }
-
-  .oraculo-7nos-title {
-    font-size: 20px;
-    line-height: 1.2;
-  }
-
-  .oraculo-7nos-subtitle {
-    font-size: 13px;
-    line-height: 1.45;
-  }
-
-  .oraculo-7nos-close {
-    width: 38px;
-    height: 38px;
-    font-size: 20px;
-  }
-
-  .oraculo-7nos-body {
-    padding: 16px;
-  }
-
-  .oraculo-7nos-label {
-    font-size: 14px;
-    margin-bottom: 9px;
-  }
-
-  .oraculo-7nos-input {
-    font-size: 16px;
-    padding: 16px 15px;
-    border-radius: 16px;
-    margin-bottom: 16px;
-  }
-
-  .oraculo-7nos-cats {
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 16px;
-  }
-
-  .oraculo-7nos-cat {
-    min-height: 50px;
-    padding: 14px 10px;
-    font-size: 15px;
-    border-radius: 16px;
-  }
-
-  .oraculo-7nos-primary {
-    padding: 17px 16px;
-    font-size: 17px;
-    border-radius: 16px;
-  }
-
-  .oraculo-7nos-result {
-    padding: 16px;
-    border-radius: 18px;
-  }
-
-  .oraculo-7nos-result h4 {
-    font-size: 17px;
-    margin-bottom: 10px;
-  }
-
-  .oraculo-7nos-result p {
-    font-size: 15px;
-    line-height: 1.75;
-  }
-
-  .oraculo-7nos-actions {
-    gap: 10px;
-  }
-
-  .oraculo-7nos-secondary,
-  .oraculo-7nos-wa {
-    font-size: 15px;
-    padding: 14px 12px;
-    border-radius: 15px;
-  }
-
-  .oraculo-7nos-footer {
-    font-size: 12px;
-    margin-top: 12px;
-  }
-}
-
-@media (max-width: 420px) {
-  .oraculo-7nos-panel {
-    left: 10px;
-    right: 10px;
-    bottom: 102px;
-    max-height: 85vh;
-    border-radius: 22px;
-  }
-
-  .oraculo-7nos-bubble {
-    max-width: 220px;
-    bottom: 104px;
-  }
-
-  .oraculo-7nos-title {
-    font-size: 19px;
-  }
-
-  .oraculo-7nos-subtitle {
-    font-size: 12px;
-  }
-
-  .oraculo-7nos-cat {
-    font-size: 14px;
-  }
-
-  .oraculo-7nos-primary {
-    font-size: 16px;
-  }
-}
+      @media (max-width: 640px) {
+        #oraculo-7nos-root {
+          right: 12px;
+          bottom: 12px;
+        }
 
         .oraculo-7nos-toggle {
-          width: 84px;
-          height: 84px;
+          width: 88px;
+          height: 88px;
+          position: relative;
+          z-index: 1000001;
+        }
+
+        .oraculo-7nos-toggle img {
+          width: 90%;
+          height: 90%;
         }
 
         .oraculo-7nos-bubble {
-          right: 2px;
-          bottom: 102px;
+          right: 0;
+          bottom: 108px;
           max-width: 240px;
           white-space: normal;
           font-size: 13px;
+          line-height: 1.4;
           padding: 12px 14px;
+          z-index: 1000001;
         }
 
         .oraculo-7nos-panel {
-          right: 0;
-          bottom: 98px;
-          width: min(94vw, 390px);
-          max-height: 78vh;
-          border-radius: 22px;
+          position: fixed !important;
+          left: 12px !important;
+          right: 12px !important;
+          top: 20px !important;
+          bottom: 110px !important;
+          width: auto !important;
+          max-width: none !important;
+          max-height: none !important;
+          border-radius: 24px;
+          z-index: 1000000;
+          transform: translateY(18px) scale(0.98);
+        }
+
+        .oraculo-7nos-panel.open {
+          transform: translateY(0) scale(1);
         }
 
         .oraculo-7nos-header {
           padding: 18px 16px 14px;
         }
 
+        .oraculo-7nos-title-wrap {
+          gap: 12px;
+        }
+
         .oraculo-7nos-title-icon {
-          width: 48px;
-          height: 48px;
+          width: 50px;
+          height: 50px;
+        }
+
+        .oraculo-7nos-title {
+          font-size: 20px;
+          line-height: 1.2;
+        }
+
+        .oraculo-7nos-subtitle {
+          font-size: 13px;
+          line-height: 1.45;
+        }
+
+        .oraculo-7nos-close {
+          width: 38px;
+          height: 38px;
+          font-size: 20px;
+        }
+
+        .oraculo-7nos-body {
+          padding: 16px;
+          overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+
+        .oraculo-7nos-label {
+          font-size: 14px;
+          margin-bottom: 9px;
+        }
+
+        .oraculo-7nos-input {
+          font-size: 16px;
+          padding: 16px 15px;
+          border-radius: 16px;
+          margin-bottom: 16px;
+        }
+
+        .oraculo-7nos-cats {
+          grid-template-columns: 1fr 1fr;
+          gap: 10px;
+          margin-bottom: 16px;
+        }
+
+        .oraculo-7nos-cat {
+          min-height: 50px;
+          padding: 14px 10px;
+          font-size: 15px;
+          border-radius: 16px;
+        }
+
+        .oraculo-7nos-primary {
+          padding: 17px 16px;
+          font-size: 17px;
+          border-radius: 16px;
+        }
+
+        .oraculo-7nos-result {
+          padding: 16px;
+          border-radius: 18px;
+        }
+
+        .oraculo-7nos-result h4 {
+          font-size: 17px;
+          margin-bottom: 10px;
+        }
+
+        .oraculo-7nos-result p {
+          font-size: 15px;
+          line-height: 1.75;
+        }
+
+        .oraculo-7nos-actions {
+          gap: 10px;
+        }
+
+        .oraculo-7nos-secondary,
+        .oraculo-7nos-wa {
+          font-size: 15px;
+          padding: 14px 12px;
+          border-radius: 15px;
+        }
+
+        .oraculo-7nos-footer {
+          font-size: 12px;
+          margin-top: 12px;
+        }
+      }
+
+      @media (max-width: 420px) {
+        .oraculo-7nos-panel {
+          left: 10px !important;
+          right: 10px !important;
+          top: 16px !important;
+          bottom: 104px !important;
+          border-radius: 22px;
+        }
+
+        .oraculo-7nos-bubble {
+          max-width: 220px;
+          bottom: 104px;
         }
 
         .oraculo-7nos-title {
@@ -702,55 +700,12 @@
           font-size: 12px;
         }
 
-        .oraculo-7nos-body {
-          padding: 16px;
-        }
-
-        .oraculo-7nos-input {
-          font-size: 16px;
-          padding: 15px 14px;
-        }
-
-        .oraculo-7nos-cats {
-          grid-template-columns: 1fr 1fr;
-          gap: 9px;
-        }
-
         .oraculo-7nos-cat {
           font-size: 14px;
-          padding: 13px 10px;
-          min-height: 46px;
         }
 
         .oraculo-7nos-primary {
-          padding: 16px;
           font-size: 16px;
-        }
-
-        .oraculo-7nos-result h4 {
-          font-size: 16px;
-        }
-
-        .oraculo-7nos-result p {
-          font-size: 15px;
-          line-height: 1.7;
-        }
-
-        .oraculo-7nos-secondary,
-        .oraculo-7nos-wa {
-          font-size: 14px;
-          padding: 13px 12px;
-        }
-      }
-
-      @media (max-width: 420px) {
-        .oraculo-7nos-panel {
-          width: calc(100vw - 24px);
-          right: 0;
-        }
-
-        .oraculo-7nos-bubble {
-          max-width: 220px;
         }
       }
     `;
@@ -759,7 +714,7 @@
 
   function createMarkup() {
     const catsMarkup = CATEGORIAS.map(function (cat) {
-      return `<button type="button" class="oraculo-7nos-cat" data-cat="${cat.key}">${cat.label}</button>`;
+      return '<button type="button" class="oraculo-7nos-cat" data-cat="' + cat.key + '">' + cat.label + "</button>";
     }).join("");
 
     return `
@@ -770,8 +725,9 @@
           <div class="oraculo-7nos-header">
             <div class="oraculo-7nos-topline">
               <div class="oraculo-7nos-title-wrap">
-                <div class="oraculo-7nos-title-icon">
-                  <img src="${ORACULO_ICON_URL}" alt="Oráculo" />
+                <div class="oraculo-7nos-title-icon" id="oraculo-7nos-title-icon">
+                  <img src="${ORACULO_ICON_URL}" alt="Oráculo" class="oraculo-remote-icon" />
+                  <div class="oraculo-fallback-face" aria-hidden="true">🔮</div>
                 </div>
                 <div>
                   <h3 class="oraculo-7nos-title">Oráculo dos 7 Nós</h3>
@@ -812,10 +768,29 @@
         </div>
 
         <button type="button" class="oraculo-7nos-toggle" id="oraculo-7nos-toggle" aria-label="Abrir Oráculo dos 7 Nós">
-          <img src="${ORACULO_ICON_URL}" alt="Abrir oráculo" />
+          <img src="${ORACULO_ICON_URL}" alt="Abrir oráculo" class="oraculo-remote-icon" />
+          <div class="oraculo-fallback-face" aria-hidden="true">🔮</div>
         </button>
       </div>
     `;
+  }
+
+  function ativarFallbackDeImagem(root) {
+    const imagens = root.querySelectorAll(".oraculo-remote-icon");
+
+    imagens.forEach(function (img) {
+      img.addEventListener("error", function () {
+        img.style.display = "none";
+        const fallback = img.parentElement.querySelector(".oraculo-fallback-face");
+        if (fallback) fallback.style.display = "flex";
+      });
+
+      img.addEventListener("load", function () {
+        img.style.display = "block";
+        const fallback = img.parentElement.querySelector(".oraculo-fallback-face");
+        if (fallback) fallback.style.display = "none";
+      });
+    });
   }
 
   function mount() {
@@ -825,26 +800,27 @@
 
     const host = document.createElement("div");
     host.innerHTML = createMarkup();
-    document.body.appendChild(host.firstElementChild);
+    const root = host.firstElementChild;
+    document.body.appendChild(root);
 
-    bindEvents();
+    ativarFallbackDeImagem(root);
+    bindEvents(root);
   }
 
-  function bindEvents() {
-    const root = document.getElementById("oraculo-7nos-root");
-    const bubble = document.getElementById("oraculo-7nos-bubble");
-    const panel = document.getElementById("oraculo-7nos-panel");
-    const toggle = document.getElementById("oraculo-7nos-toggle");
-    const closeBtn = document.getElementById("oraculo-7nos-close");
-    const nameInput = document.getElementById("oraculo-7nos-name");
-    const generateBtn = document.getElementById("oraculo-7nos-generate");
-    const errorBox = document.getElementById("oraculo-7nos-error");
-    const resultBox = document.getElementById("oraculo-7nos-result");
-    const resultTitle = document.getElementById("oraculo-7nos-result-title");
-    const resultText = document.getElementById("oraculo-7nos-result-text");
-    const actionsBox = document.getElementById("oraculo-7nos-actions");
-    const waBtn = document.getElementById("oraculo-7nos-wa");
-    const againBtn = document.getElementById("oraculo-7nos-again");
+  function bindEvents(root) {
+    const bubble = root.querySelector("#oraculo-7nos-bubble");
+    const panel = root.querySelector("#oraculo-7nos-panel");
+    const toggle = root.querySelector("#oraculo-7nos-toggle");
+    const closeBtn = root.querySelector("#oraculo-7nos-close");
+    const nameInput = root.querySelector("#oraculo-7nos-name");
+    const generateBtn = root.querySelector("#oraculo-7nos-generate");
+    const errorBox = root.querySelector("#oraculo-7nos-error");
+    const resultBox = root.querySelector("#oraculo-7nos-result");
+    const resultTitle = root.querySelector("#oraculo-7nos-result-title");
+    const resultText = root.querySelector("#oraculo-7nos-result-text");
+    const actionsBox = root.querySelector("#oraculo-7nos-actions");
+    const waBtn = root.querySelector("#oraculo-7nos-wa");
+    const againBtn = root.querySelector("#oraculo-7nos-again");
     const catButtons = root.querySelectorAll(".oraculo-7nos-cat");
 
     let categoriaSelecionada = "";
@@ -861,6 +837,11 @@
       panel.classList.add("open");
       panel.setAttribute("aria-hidden", "false");
       bubble.classList.add("hidden");
+
+      if (window.innerWidth <= 640) {
+        root.classList.add("oraculo-mobile-open");
+      }
+
       setTimeout(function () {
         nameInput.focus();
       }, 120);
@@ -869,6 +850,7 @@
     function closePanel() {
       panel.classList.remove("open");
       panel.setAttribute("aria-hidden", "true");
+      root.classList.remove("oraculo-mobile-open");
     }
 
     function showError(msg) {
@@ -927,7 +909,9 @@
       }
     });
 
-    closeBtn.addEventListener("click", closePanel);
+    closeBtn.addEventListener("click", function () {
+      closePanel();
+    });
 
     document.addEventListener("keydown", function (event) {
       if (event.key === "Escape" && panel.classList.contains("open")) {
@@ -941,7 +925,9 @@
       });
     });
 
-    generateBtn.addEventListener("click", renderMessage);
+    generateBtn.addEventListener("click", function () {
+      renderMessage();
+    });
 
     nameInput.addEventListener("keydown", function (event) {
       if (event.key === "Enter") {
@@ -952,10 +938,12 @@
 
     againBtn.addEventListener("click", function (event) {
       event.preventDefault();
+
       if (!categoriaSelecionada) {
         showError("Escolha uma energia para receber outra mensagem.");
         return;
       }
+
       clearError();
       renderMessage();
     });
@@ -963,6 +951,14 @@
     document.addEventListener("click", function (event) {
       if (!root.contains(event.target) && panel.classList.contains("open")) {
         closePanel();
+      }
+    });
+
+    window.addEventListener("resize", function () {
+      if (window.innerWidth > 640) {
+        root.classList.remove("oraculo-mobile-open");
+      } else if (panel.classList.contains("open")) {
+        root.classList.add("oraculo-mobile-open");
       }
     });
 
