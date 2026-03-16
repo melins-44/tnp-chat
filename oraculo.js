@@ -5,7 +5,8 @@
   window.__ORACULO_7_NOS_WIDGET__ = true;
 
   const WHATSAPP_NUMBER = "5521986563334";
-  const VERSION = "2.0.0";
+  const VERSION = "3.0.0";
+  const ORACULO_ICON_URL = "https://melins-44.github.io/tnp-chat/oraculo-mascote.png";
 
   const ORACULO_7_NOS = {
     protecao: [
@@ -121,15 +122,6 @@
     return valor || "Você";
   }
 
-  function escapeHtml(str) {
-    return String(str)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
-  }
-
   function sortearIndice(lista, ultimoIndice) {
     if (!Array.isArray(lista) || lista.length === 0) return -1;
     if (lista.length === 1) return 0;
@@ -193,14 +185,14 @@
       .oraculo-7nos-bubble {
         position: absolute;
         right: 0;
-        bottom: 76px;
-        background: #2a2f45;
+        bottom: 92px;
+        background: #7b2cbf;
         color: #fff;
-        padding: 10px 12px;
-        border-radius: 14px;
+        padding: 12px 14px;
+        border-radius: 16px;
         font-size: 13px;
-        line-height: 1.3;
-        box-shadow: 0 10px 24px rgba(0,0,0,0.20);
+        line-height: 1.35;
+        box-shadow: 0 12px 28px rgba(0,0,0,0.22);
         white-space: nowrap;
         opacity: 1;
         transform: translateY(0);
@@ -216,51 +208,54 @@
       .oraculo-7nos-bubble::after {
         content: "";
         position: absolute;
-        right: 18px;
+        right: 24px;
         bottom: -6px;
         width: 12px;
         height: 12px;
-        background: #2a2f45;
+        background: #7b2cbf;
         transform: rotate(45deg);
       }
 
       .oraculo-7nos-toggle {
-        width: 58px;
-        height: 58px;
+        width: 74px;
+        height: 74px;
         border: none;
         border-radius: 50%;
         cursor: pointer;
-        background: linear-gradient(135deg, #7b1fa2, #ba68c8);
-        box-shadow: 0 14px 28px rgba(91, 42, 134, 0.35);
+        background: linear-gradient(135deg, #7b1fa2, #c77dff);
+        box-shadow: 0 16px 32px rgba(91, 42, 134, 0.35);
         display: flex;
         align-items: center;
         justify-content: center;
         padding: 0;
+        overflow: hidden;
         transition: transform 0.18s ease, box-shadow 0.18s ease;
       }
 
       .oraculo-7nos-toggle:hover {
-        transform: translateY(-2px) scale(1.02);
-        box-shadow: 0 18px 30px rgba(91, 42, 134, 0.42);
+        transform: translateY(-2px) scale(1.03);
+        box-shadow: 0 18px 34px rgba(91, 42, 134, 0.42);
       }
 
-      .oraculo-7nos-toggle svg {
-        width: 30px;
-        height: 30px;
+      .oraculo-7nos-toggle img {
+        width: 88%;
+        height: 88%;
+        object-fit: contain;
         display: block;
+        border-radius: 50%;
       }
 
       .oraculo-7nos-panel {
         position: absolute;
         right: 0;
-        bottom: 76px;
-        width: min(92vw, 360px);
-        max-height: min(78vh, 620px);
+        bottom: 90px;
+        width: 360px;
+        max-height: min(78vh, 680px);
         display: flex;
         flex-direction: column;
-        border-radius: 22px;
+        border-radius: 24px;
         overflow: hidden;
-        background: rgba(25, 18, 42, 0.96);
+        background: rgba(34, 18, 56, 0.97);
         border: 1px solid rgba(255,255,255,0.12);
         box-shadow: 0 22px 60px rgba(0,0,0,0.38);
         opacity: 0;
@@ -279,7 +274,7 @@
 
       .oraculo-7nos-header {
         padding: 16px 16px 12px;
-        background: linear-gradient(135deg, rgba(123,31,162,0.98), rgba(186,104,200,0.95));
+        background: linear-gradient(135deg, rgba(123,31,162,0.98), rgba(199,125,255,0.95));
         color: #fff;
       }
 
@@ -293,29 +288,32 @@
       .oraculo-7nos-title-wrap {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 12px;
         min-width: 0;
       }
 
       .oraculo-7nos-title-icon {
-        width: 34px;
-        height: 34px;
+        width: 42px;
+        height: 42px;
         border-radius: 50%;
         background: rgba(255,255,255,0.16);
         display: flex;
         align-items: center;
         justify-content: center;
         flex: 0 0 auto;
+        overflow: hidden;
       }
 
-      .oraculo-7nos-title-icon svg {
-        width: 18px;
-        height: 18px;
+      .oraculo-7nos-title-icon img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
       }
 
       .oraculo-7nos-title {
         margin: 0;
-        font-size: 17px;
+        font-size: 18px;
         font-weight: 700;
         line-height: 1.2;
       }
@@ -328,8 +326,8 @@
       }
 
       .oraculo-7nos-close {
-        width: 34px;
-        height: 34px;
+        width: 36px;
+        height: 36px;
         border: none;
         border-radius: 50%;
         background: rgba(255,255,255,0.14);
@@ -340,7 +338,7 @@
       }
 
       .oraculo-7nos-body {
-        padding: 14px;
+        padding: 15px;
         overflow-y: auto;
       }
 
@@ -355,7 +353,7 @@
       .oraculo-7nos-input {
         width: 100%;
         box-sizing: border-box;
-        padding: 13px 14px;
+        padding: 14px 14px;
         border-radius: 14px;
         border: 1px solid rgba(255,255,255,0.14);
         background: rgba(255,255,255,0.08);
@@ -386,7 +384,7 @@
         background: rgba(255,255,255,0.06);
         color: #fff;
         border-radius: 14px;
-        padding: 11px 10px;
+        padding: 12px 10px;
         font-size: 14px;
         font-weight: 600;
         cursor: pointer;
@@ -408,7 +406,7 @@
         width: 100%;
         border: none;
         border-radius: 15px;
-        padding: 14px 16px;
+        padding: 15px 16px;
         background: linear-gradient(135deg, #8b5cf6, #d946ef);
         color: #fff;
         font-size: 15px;
@@ -437,7 +435,7 @@
       .oraculo-7nos-result {
         display: none;
         margin-top: 14px;
-        padding: 14px;
+        padding: 15px;
         border-radius: 16px;
         background: rgba(255,255,255,0.07);
         border: 1px solid rgba(255,255,255,0.10);
@@ -453,7 +451,7 @@
         margin: 0;
         color: rgba(255,255,255,0.94);
         font-size: 14px;
-        line-height: 1.6;
+        line-height: 1.65;
       }
 
       .oraculo-7nos-actions {
@@ -501,47 +499,104 @@
         line-height: 1.4;
       }
 
-      @media (max-width: 480px) {
+      @media (max-width: 640px) {
         #oraculo-7nos-root {
           right: 12px;
           bottom: 12px;
         }
 
-        .oraculo-7nos-panel {
-          width: min(94vw, 350px);
-          bottom: 70px;
+        .oraculo-7nos-toggle {
+          width: 84px;
+          height: 84px;
         }
 
         .oraculo-7nos-bubble {
-          font-size: 12px;
-          bottom: 70px;
-          max-width: 220px;
+          right: 2px;
+          bottom: 102px;
+          max-width: 240px;
           white-space: normal;
+          font-size: 13px;
+          padding: 12px 14px;
+        }
+
+        .oraculo-7nos-panel {
+          right: 0;
+          bottom: 98px;
+          width: min(94vw, 390px);
+          max-height: 78vh;
+          border-radius: 22px;
+        }
+
+        .oraculo-7nos-header {
+          padding: 18px 16px 14px;
+        }
+
+        .oraculo-7nos-title-icon {
+          width: 48px;
+          height: 48px;
+        }
+
+        .oraculo-7nos-title {
+          font-size: 19px;
+        }
+
+        .oraculo-7nos-subtitle {
+          font-size: 12px;
+        }
+
+        .oraculo-7nos-body {
+          padding: 16px;
+        }
+
+        .oraculo-7nos-input {
+          font-size: 16px;
+          padding: 15px 14px;
         }
 
         .oraculo-7nos-cats {
           grid-template-columns: 1fr 1fr;
+          gap: 9px;
+        }
+
+        .oraculo-7nos-cat {
+          font-size: 14px;
+          padding: 13px 10px;
+          min-height: 46px;
+        }
+
+        .oraculo-7nos-primary {
+          padding: 16px;
+          font-size: 16px;
+        }
+
+        .oraculo-7nos-result h4 {
+          font-size: 16px;
+        }
+
+        .oraculo-7nos-result p {
+          font-size: 15px;
+          line-height: 1.7;
+        }
+
+        .oraculo-7nos-secondary,
+        .oraculo-7nos-wa {
+          font-size: 14px;
+          padding: 13px 12px;
+        }
+      }
+
+      @media (max-width: 420px) {
+        .oraculo-7nos-panel {
+          width: calc(100vw - 24px);
+          right: 0;
+        }
+
+        .oraculo-7nos-bubble {
+          max-width: 220px;
         }
       }
     `;
     document.head.appendChild(style);
-  }
-
-  function createIconSVG() {
-    return `
-      <svg viewBox="0 0 64 64" aria-hidden="true">
-        <defs>
-          <linearGradient id="oraculoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#ffffff"/>
-            <stop offset="100%" stop-color="#f3e8ff"/>
-          </linearGradient>
-        </defs>
-        <path fill="url(#oraculoGrad)" d="M32 8c-8.2 0-14.8 6.6-14.8 14.8 0 3.8 1.4 7.3 3.8 10L18 46l13.4-3c.2 0 .4-.1.6-.1 8.2 0 14.8-6.6 14.8-14.8S40.2 8 32 8zm0 5.4c5.2 0 9.4 4.2 9.4 9.4 0 4.3-2.9 7.9-6.9 9l-.8.2-.8.2-.2.8-.6 2.7-2.8-.6-.8-.2-.8.2c-.5.1-1 .2-1.5.2-5.2 0-9.4-4.2-9.4-9.4s4.2-9.5 9.4-9.5z"/>
-        <circle cx="26" cy="23" r="2.2" fill="#8b5cf6"/>
-        <circle cx="32" cy="23" r="2.2" fill="#8b5cf6"/>
-        <circle cx="38" cy="23" r="2.2" fill="#8b5cf6"/>
-      </svg>
-    `;
   }
 
   function createMarkup() {
@@ -558,7 +613,7 @@
             <div class="oraculo-7nos-topline">
               <div class="oraculo-7nos-title-wrap">
                 <div class="oraculo-7nos-title-icon">
-                  ${createIconSVG()}
+                  <img src="${ORACULO_ICON_URL}" alt="Oráculo" />
                 </div>
                 <div>
                   <h3 class="oraculo-7nos-title">Oráculo dos 7 Nós</h3>
@@ -599,7 +654,7 @@
         </div>
 
         <button type="button" class="oraculo-7nos-toggle" id="oraculo-7nos-toggle" aria-label="Abrir Oráculo dos 7 Nós">
-          ${createIconSVG()}
+          <img src="${ORACULO_ICON_URL}" alt="Abrir oráculo" />
         </button>
       </div>
     `;
@@ -678,6 +733,7 @@
 
     function renderMessage() {
       const nomeDigitado = String(nameInput.value || "").trim();
+
       if (!nomeDigitado) {
         showError("Digite seu nome para receber a mensagem do oráculo.");
         nameInput.focus();
