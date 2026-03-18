@@ -4,7 +4,7 @@
   if (window.__ORACULO_7_NOS_WIDGET__) return;
   window.__ORACULO_7_NOS_WIDGET__ = true;
 
-  const WHATSAPP_NUMBER = "5521986563334";
+  const WHATSAPP_NUMBER = "5521964070218";
   const VERSION = "9.0.0";
   const ORACULO_ICON_URL = "https://melins-44.github.io/tnp-chat/oraculo-mascote.png?v=1";
 
